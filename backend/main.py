@@ -11,3 +11,5 @@ async def root():
 @app.get("/hello/{name}")
 async def say_hello(name: str):
     return {"message": f"Hello {name}"}
+
+# run with `uvicorn main:app --reload`
