@@ -8,26 +8,21 @@ import couchdb
 from tqdm import tqdm
 from mpi4py import MPI
 
+from CouchAPI import CouchApi
+
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 world_size = comm.Get_size()
 
 argparser = argparse.ArgumentParser()
-argparser.add_argument('--json_path', type=str, default='data/twitter-huge.json')
-argparser.add_argument('--db_name', type=str, default='raw_tweets_geo')
-argparser.add_argument('--server_url', type=str, default='http://localhost:5984/')
+argparser.add_argument('--json_path', type=str, default='/Users/ralph/Projects/ccc_proj/data/twitter-huge.json')
+argparser.add_argument('--db_name', type=str, default='raw_tweets')
+argparser.add_argument('--server_url', type=str, default='http://192.168.0.80:5984/')
 args = argparser.parse_args()
 
-# Connect to CouchDB server
-# if rank in [0, 1]:
-#     server_url = 'http://192.168.0.80:5984/'
-# elif rank in [2, 3]:
-#     server_url = 'http://192.168.0.80:5985/'
-# else:
-#     server_url = 'http://192.168.0.80:5986/'
 server_url = args.server_url
-couch = couchdb.Server(server_url)
-couch.resource.credentials = ('admin', 'admin')
+couch = CouchApi(server_url, 'admin', 'admin')
+# couch.resource.credentials = ()
 # Create a new database
 db_name = args.db_name
 if rank == 0:
@@ -66,9 +61,7 @@ def handel_tweet(item):
         'tokens': item['value']['tokens'],
         'text': item['doc']['data']['text'],
     }
-
-    if item['doc']['data'].get('geo', {}) != {}:
-        db.save(tweet)
+    return tweet
 
 
 def process(json_path='data/twitter-huge.json'):
@@ -85,7 +78,7 @@ def process(json_path='data/twitter-huge.json'):
     real_end_offset = seek_end_of_line(mmap_obj, search_start, search_end)
     line_count = 0
     pbar_rank = 0
-    # jsons = []
+    jsons = []
     total_bytes = real_end_offset - real_start_offset
     if rank == pbar_rank:
         pbar = tqdm(
@@ -104,13 +97,28 @@ def process(json_path='data/twitter-huge.json'):
         # Save a document to the database
 
         # do something with the tweet
-        handel_tweet(item)
+        new_tweet = handel_tweet(item)
+
+        jsons.append(new_tweet)
+        if len(jsons) >= 1_000:
+            # print('rank:', rank, 'save_batch', len(jsons))
+            db.save_batch(jsons)
+            jsons = []
+
+
+        # if item['doc']['data'].get('geo', {}) != {}:
+        #     jsons.append(new_tweet)
+        #     if len(jsons) >= 1_000:
+        #         # print('rank:', rank, 'save_batch', len(jsons))
+        #         db.save_batch(jsons)
+        #         jsons = []
 
         if rank == pbar_rank:
             pbar.update((new_tell - tell) / total_bytes * 100)
         tell = new_tell
         line_count += 1
 
+    db.save_batch(jsons)
     # if line_count > 100000:
     #     break
     if rank == pbar_rank:
