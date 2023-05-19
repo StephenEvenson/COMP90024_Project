@@ -36,7 +36,7 @@ const Drag = (): void => {
     let closestOffset = Number.NEGATIVE_INFINITY;
 
     els.forEach((task) => {
-      const { top } = task.getBoundingClientRect();
+      const {top} = task.getBoundingClientRect();
 
       const offset = mouseY - top;
 

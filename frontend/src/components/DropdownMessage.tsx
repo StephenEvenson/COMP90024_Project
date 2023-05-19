@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import {useEffect, useRef, useState} from 'react';
+import {Link} from 'react-router-dom';
 
 import UserOne from '../images/user/user-01.png';
 import UserTwo from '../images/user/user-02.png';
@@ -14,7 +14,7 @@ const DropdownMessage = () => {
 
   // close on click outside
   useEffect(() => {
-    const clickHandler = ({ target }: MouseEvent) => {
+    const clickHandler = ({target}: MouseEvent) => {
       if (!dropdown.current) return;
       if (
         !dropdownOpen ||
@@ -30,7 +30,7 @@ const DropdownMessage = () => {
 
   // close if the esc key is pressed
   useEffect(() => {
-    const keyHandler = ({ keyCode }: KeyboardEvent) => {
+    const keyHandler = ({keyCode}: KeyboardEvent) => {
       if (!dropdownOpen || keyCode !== 27) return;
       setDropdownOpen(false);
     };
@@ -47,7 +47,8 @@ const DropdownMessage = () => {
         to="#"
       >
         <span className="absolute -top-0.5 -right-0.5 z-1 h-2 w-2 rounded-full bg-meta-1">
-          <span className="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-meta-1 opacity-75"></span>
+          <span
+            className="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-meta-1 opacity-75"></span>
         </span>
 
         <svg
@@ -97,7 +98,7 @@ const DropdownMessage = () => {
               to="/messages"
             >
               <div className="h-12.5 w-12.5 rounded-full">
-                <img src={UserTwo} alt="User" />
+                <img src={UserTwo} alt="User"/>
               </div>
 
               <div>
@@ -115,7 +116,7 @@ const DropdownMessage = () => {
               to="/messages"
             >
               <div className="h-12.5 w-12.5 rounded-full">
-                <img src={UserOne} alt="User" />
+                <img src={UserOne} alt="User"/>
               </div>
 
               <div>
@@ -133,7 +134,7 @@ const DropdownMessage = () => {
               to="/messages"
             >
               <div className="h-12.5 w-12.5 rounded-full">
-                <img src={UserThree} alt="User" />
+                <img src={UserThree} alt="User"/>
               </div>
 
               <div>
@@ -151,7 +152,7 @@ const DropdownMessage = () => {
               to="/messages"
             >
               <div className="h-12.5 w-12.5 rounded-full">
-                <img src={UserFour} alt="User" />
+                <img src={UserFour} alt="User"/>
               </div>
 
               <div>
@@ -169,7 +170,7 @@ const DropdownMessage = () => {
               to="/messages"
             >
               <div className="h-12.5 w-12.5 rounded-full">
-                <img src={UserTwo} alt="User" />
+                <img src={UserTwo} alt="User"/>
               </div>
 
               <div>

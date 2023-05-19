@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import {useEffect, useRef, useState} from "react";
 
 const DropdownDefault = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -8,7 +8,7 @@ const DropdownDefault = () => {
 
   // close on click outside
   useEffect(() => {
-    const clickHandler = ({ target }: MouseEvent) => {
+    const clickHandler = ({target}: MouseEvent) => {
       if (!dropdown.current) return;
       if (
         !dropdownOpen ||
@@ -24,7 +24,7 @@ const DropdownDefault = () => {
 
   // close if the esc key is pressed
   useEffect(() => {
-    const keyHandler = ({ keyCode }: KeyboardEvent) => {
+    const keyHandler = ({keyCode}: KeyboardEvent) => {
       if (!dropdownOpen || keyCode !== 27) return;
       setDropdownOpen(false);
     };
@@ -64,7 +64,8 @@ const DropdownDefault = () => {
           dropdownOpen === true ? "block" : "hidden"
         }`}
       >
-        <button className="flex w-full items-center gap-2 rounded-sm py-1.5 px-4 text-left text-sm hover:bg-gray dark:hover:bg-meta-4">
+        <button
+          className="flex w-full items-center gap-2 rounded-sm py-1.5 px-4 text-left text-sm hover:bg-gray dark:hover:bg-meta-4">
           <svg
             className="fill-current"
             width="16"
@@ -81,13 +82,14 @@ const DropdownDefault = () => {
             </g>
             <defs>
               <clipPath id="clip0_62_9787">
-                <rect width="16" height="16" fill="white" />
+                <rect width="16" height="16" fill="white"/>
               </clipPath>
             </defs>
           </svg>
           Edit
         </button>
-        <button className="flex w-full items-center gap-2 rounded-sm py-1.5 px-4 text-left text-sm hover:bg-gray dark:hover:bg-meta-4">
+        <button
+          className="flex w-full items-center gap-2 rounded-sm py-1.5 px-4 text-left text-sm hover:bg-gray dark:hover:bg-meta-4">
           <svg
             className="fill-current"
             width="16"

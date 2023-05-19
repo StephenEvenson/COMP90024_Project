@@ -12,7 +12,8 @@ const TableTwo = () => {
         </h4>
       </div>
 
-      <div className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+      <div
+        className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
         <div className="col-span-3 flex items-center">
           <p className="font-medium">Product Name</p>
         </div>
@@ -30,11 +31,12 @@ const TableTwo = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+      <div
+        className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
         <div className="col-span-3 flex items-center">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
             <div className="h-12.5 w-15 rounded-md">
-              <img src={ProductOne} alt="Product" />
+              <img src={ProductOne} alt="Product"/>
             </div>
             <p className="text-sm text-black dark:text-white">
               Apple Watch Series 7
@@ -54,11 +56,12 @@ const TableTwo = () => {
           <p className="text-sm text-meta-3">$45</p>
         </div>
       </div>
-      <div className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+      <div
+        className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
         <div className="col-span-3 flex items-center">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
             <div className="h-12.5 w-15 rounded-md">
-              <img src={ProductTwo} alt="Product" />
+              <img src={ProductTwo} alt="Product"/>
             </div>
             <p className="text-sm text-black dark:text-white">Macbook Pro M1</p>
           </div>
@@ -76,11 +79,12 @@ const TableTwo = () => {
           <p className="text-sm text-meta-3">$125</p>
         </div>
       </div>
-      <div className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+      <div
+        className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
         <div className="col-span-3 flex items-center">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
             <div className="h-12.5 w-15 rounded-md">
-              <img src={ProductThree} alt="Product" />
+              <img src={ProductThree} alt="Product"/>
             </div>
             <p className="text-sm text-black dark:text-white">
               Dell Inspiron 15
@@ -100,11 +104,12 @@ const TableTwo = () => {
           <p className="text-sm text-meta-3">$247</p>
         </div>
       </div>
-      <div className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+      <div
+        className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
         <div className="col-span-3 flex items-center">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
             <div className="h-12.5 w-15 rounded-md">
-              <img src={ProductFour} alt="Product" />
+              <img src={ProductFour} alt="Product"/>
             </div>
             <p className="text-sm text-black dark:text-white">HP Probook 450</p>
           </div>

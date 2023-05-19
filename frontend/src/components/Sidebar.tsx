@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import React, {useEffect, useRef, useState} from 'react';
+import {NavLink, useLocation} from 'react-router-dom';
 import Logo from '../images/logo/logo.svg';
 import SidebarLinkGroup from './SidebarLinkGroup';
 
@@ -8,9 +8,9 @@ interface SidebarProps {
   setSidebarOpen: (arg: boolean) => void;
 }
 
-const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
+const Sidebar = ({sidebarOpen, setSidebarOpen}: SidebarProps) => {
   const location = useLocation();
-  const { pathname } = location;
+  const {pathname} = location;
 
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
@@ -22,7 +22,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
   // close on click outside
   useEffect(() => {
-    const clickHandler = ({ target }: MouseEvent) => {
+    const clickHandler = ({target}: MouseEvent) => {
       if (!sidebar.current || !trigger.current) return;
       if (
         !sidebarOpen ||
@@ -38,7 +38,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
   // close if the esc key is pressed
   useEffect(() => {
-    const keyHandler = ({ keyCode }: KeyboardEvent) => {
+    const keyHandler = ({keyCode}: KeyboardEvent) => {
       if (!sidebarOpen || keyCode !== 27) return;
       setSidebarOpen(false);
     };
@@ -65,7 +65,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
         <NavLink to="/">
-          <img src={Logo} alt="Logo" />
+          <img src={Logo} alt="Logo"/>
         </NavLink>
 
         <button
@@ -179,7 +179,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           <li>
                             <NavLink
                               to="/"
-                              className={({ isActive }) =>
+                              className={({isActive}) =>
                                 'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
                                 (isActive && '!text-white')
                               }
@@ -334,7 +334,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           <li>
                             <NavLink
                               to="/forms/form-elements"
-                              className={({ isActive }) =>
+                              className={({isActive}) =>
                                 'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
                                 (isActive && '!text-white')
                               }
@@ -345,7 +345,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           <li>
                             <NavLink
                               to="/forms/form-layout"
-                              className={({ isActive }) =>
+                              className={({isActive}) =>
                                 'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
                                 (isActive && '!text-white')
                               }
@@ -576,7 +576,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           <li>
                             <NavLink
                               to="/ui/alerts"
-                              className={({ isActive }) =>
+                              className={({isActive}) =>
                                 'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
                                 (isActive && '!text-white')
                               }
@@ -587,7 +587,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           <li>
                             <NavLink
                               to="/ui/buttons"
-                              className={({ isActive }) =>
+                              className={({isActive}) =>
                                 'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
                                 (isActive && '!text-white')
                               }
@@ -684,7 +684,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           <li>
                             <NavLink
                               to="/auth/signin"
-                              className={({ isActive }) =>
+                              className={({isActive}) =>
                                 'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
                                 (isActive && '!text-white')
                               }
@@ -695,7 +695,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           <li>
                             <NavLink
                               to="/auth/signup"
-                              className={({ isActive }) =>
+                              className={({isActive}) =>
                                 'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
                                 (isActive && '!text-white')
                               }
