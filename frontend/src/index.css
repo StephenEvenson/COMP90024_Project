@@ -194,3 +194,30 @@ span.flatpickr-weekday,
 [x-cloak] {
     display: none !important;
 }
+
+.mapboxgl-popup-content {
+    position: relative;
+    background: #fff;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
+    padding: 10px 10px 15px;
+    pointer-events: auto;
+    width: max-content;
+    height: max-content;
+    min-height: 100px;
+    min-width: 100px;
+    max-height: max-content;
+    max-width: max-content;
+}
+
+.mapboxgl-popup-close-button {
+    position: absolute;
+    right: 0;
+    top: 0;
+    border: 0;
+    border-radius: 0 3px 0 0;
+    cursor: pointer;
+    background-color: transparent;
+    font-size: 20px;
+    padding-right: 2px;
+}

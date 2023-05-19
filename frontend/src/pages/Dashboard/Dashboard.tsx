@@ -6,10 +6,11 @@ import ChartOne from '../../components/ChartOne';
 import ChartThree from '../../components/ChartThree';
 import ChartTwo from '../../components/ChartTwo';
 import ChatCard from '../../components/ChatCard';
-import MapOne from '../../components/MapOne';
+// import MapOne from '../../components/MapOne';
 import TableOne from '../../components/TableOne';
 import DefaultLayout from '../../layout/DefaultLayout';
-import MapTest from "../../components/maps/mapTest";
+// import MapTest from "../../components/maps/mapTest";
+import MapHover from "../../components/maps/mapHover";
 
 const ECommerce = () => {
   return (
@@ -26,7 +27,7 @@ const ECommerce = () => {
         <ChartTwo/>
         <ChartThree/>
         {/*<MapOne />*/}
-        <MapTest/>
+        <MapHover/>
         <div className="col-span-12 xl:col-span-8">
           <TableOne/>
         </div>

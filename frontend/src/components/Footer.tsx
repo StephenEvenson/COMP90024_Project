@@ -24,7 +24,7 @@ const navigation = [
 export default function BaseFooter() {
   return (
     <footer>
-      <div className='max-w-screen-2xl mx-auto py-2 px-6 md:flex md:items-center md:justify-between '>
+      <div className='max-w-screen-2xl mx-auto py-2 px-6 md:flex md:items-center md:justify-between 2xl:px-10 3xl:px-9'>
         <div className='flex justify-center space-x-6 md:order-2'>
           {navigation.map((item) => (
             <a

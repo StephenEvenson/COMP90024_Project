@@ -7,7 +7,6 @@ import {
 } from "react-router-dom";
 import "./index.css";
 import Root from "./routes/root";
-import './index.css';
 import ErrorPage from "./error-page";
 import ECommerce from "./pages/Dashboard/Dashboard";
 
