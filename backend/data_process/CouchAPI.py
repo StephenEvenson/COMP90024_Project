@@ -4,7 +4,6 @@ import decimal
 import requests
 
 
-
 class DecimalEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, decimal.Decimal):
@@ -22,9 +21,7 @@ class myDB(couchdb.Database):
         requests.post(
             url=url,
             data=json_body,
-            headers={
-                'Content-type': 'application/json'
-            },
+            headers={'Content-type': 'application/json'},
             auth=self.resource.credentials
         )
 
