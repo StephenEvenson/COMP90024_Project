@@ -1,6 +1,7 @@
 import {ReactNode, useState} from 'react';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
+import Footer from "../components/Footer";
 
 interface DefaultLayoutProps {
   children: ReactNode;
@@ -30,14 +31,7 @@ const DefaultLayout = ({children}: DefaultLayoutProps) => {
             </div>
           </main>
           {/* <!-- ===== Main Content End ===== --> */}
-          <footer
-            className="flex flex-col w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
-            <a
-              className="text-center"
-              href="https://github.com/StephenEvenson/COMP90024_Project/tree/master">
-              Comp90024 Cluster and Cloud Computing Project 2 - Group 72
-            </a>
-          </footer>
+          <Footer />
         </div>
 
         {/* <!-- ===== Content Area End ===== --> */}
