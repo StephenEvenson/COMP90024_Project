@@ -23,9 +23,7 @@ class Mydb(couchdb.Database):
         requests.post(
             url=url,
             data=json_body,
-            headers={
-                'Content-type': 'application/json'
-            },
+            headers={'Content-type': 'application/json'},
             auth=self.resource.credentials
         )
 
