@@ -1,7 +1,7 @@
 import {useMap} from "react-map-gl";
 import {useEffect, useRef} from "react";
 import mapboxgl from "mapbox-gl";
-import ReactDOM from "react-dom"
+import ReactDOM from "react-dom/client"
 
 const Popup = () => (
   <div className='p-2'>
@@ -92,7 +92,7 @@ export default function () {
             {hover: false}
           );
         }
-        console.log(e.features![0])
+        // console.log(e.features![0])
         hoveredPhnId = e.features![0].id as number;
         map.setFeatureState(
           {source: 'phns', id: hoveredPhnId},
@@ -119,7 +119,8 @@ export default function () {
      **/
     map.on('click', 'phn-fills', (e) => {
       const popupNode = document.createElement("div")
-      ReactDOM.render(<Popup/>, popupNode)
+      const pop = ReactDOM.createRoot(popupNode)
+      pop.render(<Popup/>)
       popUpRef.current
         .setLngLat(e.lngLat)
         .setDOMContent(popupNode)

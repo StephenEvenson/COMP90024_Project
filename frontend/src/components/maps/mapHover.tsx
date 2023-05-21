@@ -8,7 +8,7 @@ const MapHover: React.FC = () => {
   return (
     <MapProvider>
       <div
-        className='col-span-12 rounded-sm border border-stroke bg-white py-6 px-7.5 shadow-default dark:border-strokedark h-90 dark:bg-boxdark xl:col-span-7 xl:h-full'>
+        className='col-span-12 rounded-sm border border-stroke bg-white py-6 px-7.5 shadow-default dark:border-strokedark h-90 dark:bg-boxdark xl:col-span-6 xl:h-full'>
         <div className='w-full h-full'>
           <Map
             id='myMap'

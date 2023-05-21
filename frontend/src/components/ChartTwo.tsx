@@ -1,5 +1,5 @@
 import {ApexOptions} from 'apexcharts';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import ReactApexChart from 'react-apexcharts';
 
 const options: ApexOptions = {
@@ -69,6 +69,35 @@ interface ChartTwoState {
   }[];
 }
 
+interface StatePhn {
+  name: string;
+  phn_ids: number[];
+}
+
+const states = [
+  {
+    name: 'All states',
+    phn_ids: [0],
+  },
+  {
+    name: 'Victoria',
+    phn_ids: [0],
+  },
+  {
+    name: 'New South Wales',
+    phn_ids: [1],
+  },
+  {
+    name: 'Queensland',
+    phn_ids: [2],
+  },
+  {
+    name: 'Other',
+    phn_ids: [3],
+  }
+]
+
+
 const ChartTwo: React.FC = () => {
   const [state, setState] = useState<ChartTwoState>({
     series: [
@@ -83,9 +112,15 @@ const ChartTwo: React.FC = () => {
     ],
   });
 
+  const [selectedState, setSelectedState] = useState<StatePhn>(states[0]);
+
+  useEffect(() => {
+    console.log(selectedState);
+  }, [selectedState]);
+
   return (
     <div
-      className="col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-4">
+      className="col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-6">
       <div className="mb-4 justify-between gap-4 sm:flex">
         <div>
           <h4 className="text-xl font-semibold text-black dark:text-white">
@@ -98,9 +133,20 @@ const ChartTwo: React.FC = () => {
               name="#"
               id="#"
               className="relative z-20 inline-flex appearance-none bg-transparent py-1 pl-3 pr-8 text-sm font-medium outline-none"
+              onChange={
+                (e) => {
+                  setSelectedState(states[e.target.selectedIndex]);
+                }
+              }
             >
-              <option value="">This Week</option>
-              <option value="">Last Week</option>
+              {states.map((state) => (
+                <option
+                  value={state.name}
+                  key={state.name}
+                >
+                  {state.name}
+                </option>
+              ))}
             </select>
             <span className="absolute top-1/2 right-3 z-10 -translate-y-1/2">
               <svg

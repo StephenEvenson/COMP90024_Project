@@ -6,7 +6,9 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import "./index.css";
-import Root from "./routes/root";
+import './satoshi.css';
+
+// import Root from "./routes/root";
 import ErrorPage from "./error-page";
 import ECommerce from "./pages/Dashboard/Dashboard";
 

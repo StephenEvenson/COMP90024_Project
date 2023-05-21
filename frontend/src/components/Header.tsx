@@ -1,21 +1,27 @@
-import {Link} from 'react-router-dom';
-import Logo from '../images/logo/logo-icon.svg';
 import DarkModeSwitcher from './DarkModeSwitcher';
-import DropdownMessage from './DropdownMessage';
-import DropdownNotification from './DropdownNotification';
-import DropdownUser from './DropdownUser';
 
-const Header = (props: {
-  sidebarOpen: string | boolean | undefined;
-  setSidebarOpen: (arg0: boolean) => void;
-}) => {
+
+const Header = () => {
   return (
-    <header className="flex flex-col w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
-      {/*<div className="flex flex-grow items-center justify-between py-4 px-4 shadow-2 md:px-6 2xl:px-11">*/}
-      <div className="font-serif font-bold text-5xl text-center w-full py-4 px-4 shadow-2 md:px-6 2xl:px-11">
-        Homelessness in Australia
+
+    <header className="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
+      <div className="flex flex-grow items-center justify-between py-4 px-4 shadow-2 md:px-6 2xl:px-11">
+        <div className="hidden sm:block">
+          <form action="https://formbold.com/s/unique_form_id" method="POST">
+            <div className="relative">
+              <div className="w-full bg-transparent pr-4 pl-9 text-3xl">
+                Homelessness in Australia
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div className="flex items-center gap-3 2xsm:gap-7">
+          <ul className="flex items-center gap-2 2xsm:gap-4">
+            <DarkModeSwitcher/>
+          </ul>
+        </div>
       </div>
-      {/*</div>*/}
     </header>
   );
 };
