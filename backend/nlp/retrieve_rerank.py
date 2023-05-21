@@ -9,13 +9,6 @@ from tqdm import tqdm
 
 from dataset import TweetsDataSet
 
-arg_parser = argparse.ArgumentParser()
-arg_parser.add_argument('--data_path', type=str, default='data/tweets_geo_merged.jsonl')
-arg_parser.add_argument('--retrieve_model', type=str, default='sentence-transformers/msmarco-MiniLM-L-6-v3')
-arg_parser.add_argument('--cross_encoder_model', type=str, default='cross-encoder/ms-marco-MiniLM-L-6-v2')
-arg_parser.add_argument('--device', type=str, default='cuda')
-args = arg_parser.parse_args()
-
 
 def get_retrieve_embeddings(
         model: SentenceTransformer,
@@ -99,6 +92,12 @@ def retrieve(
     return indexes, scores
 
 
+def get_cross_score(model: CrossEncoder, query: str, doc: str):
+    model_input = [[query, doc]]
+    pred_scores = model.predict(model_input, convert_to_numpy=True, show_progress_bar=False)
+    return pred_scores[0]
+
+
 def re_rank_topk(model: CrossEncoder, query: str, docs: list[str], top_k=5):
     model_input = [[query, doc] for doc in docs]
     pred_scores = model.predict(model_input, convert_to_numpy=True, show_progress_bar=False)
@@ -124,7 +123,7 @@ def re_rank_thresh(model: CrossEncoder, query: str, docs: list[str], thresh: flo
     return indexes, scores
 
 
-def main():
+def main(args):
     retrieve_model = get_retrieve_model(args.retrieve_model, device=args.device)
     cross_encoder = get_cross_encoder_model(args.cross_encoder_model, device=args.device)
     dataset = TweetsDataSet(args.data_path)
@@ -167,4 +166,10 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument('--data_path', type=str, default='data/tweets_geo_merged.jsonl')
+    arg_parser.add_argument('--retrieve_model', type=str, default='sentence-transformers/msmarco-MiniLM-L-6-v3')
+    arg_parser.add_argument('--cross_encoder_model', type=str, default='cross-encoder/ms-marco-MiniLM-L-6-v2')
+    arg_parser.add_argument('--device', type=str, default='cuda')
+    args = arg_parser.parse_args()
+    main(args)
