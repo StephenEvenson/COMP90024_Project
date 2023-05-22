@@ -1,25 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import reportWebVitals from './reportWebVitals';
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
+import {RouterProvider} from "react-router-dom";
+
 import "./index.css";
 import './satoshi.css';
 
-// import Root from "./routes/root";
-import ErrorPage from "./error-page";
-import ECommerce from "./pages/Dashboard/Dashboard";
-
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <ECommerce/>,
-    errorElement: <ErrorPage/>,
-  },
-]);
+import router from "./router";
+import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
