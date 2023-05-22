@@ -7,11 +7,7 @@ import torch
 from sentence_transformers import SentenceTransformer, CrossEncoder, util
 from tqdm import tqdm
 
-from .dataset import TweetsDataSet
-
-
-def compute_one_embedding(model, text, device=None):
-    return model.encode([text], convert_to_tensor=True, show_progress_bar=False, device=device)
+from backend.nlp.dataset import TweetsDataSet
 
 
 def get_retrieve_embeddings(
@@ -60,6 +56,14 @@ def get_retrieve_model(model_name_or_path='msmarco-MiniLM-L-6-v3', device=None):
 def get_cross_encoder_model(model_name_or_path='cross-encoder/ms-marco-MiniLM-L-6-v2', device=None):
     model = CrossEncoder(model_name_or_path, device=device)
     return model
+
+
+cross_model = get_cross_encoder_model()
+retrieve_model = get_retrieve_model()
+
+
+def compute_embedding(text):
+    return retrieve_model.encode([text], convert_to_tensor=True, show_progress_bar=False)
 
 
 def retrieve(
@@ -127,7 +131,7 @@ def re_rank_thresh(model: CrossEncoder, query: str, docs: list[str], thresh: flo
     return indexes, scores
 
 
-def main(args):
+def main(args, search_query='homeless'):
     retrieve_model = get_retrieve_model(args.retrieve_model, device=args.device)
     cross_encoder = get_cross_encoder_model(args.cross_encoder_model, device=args.device)
     dataset = TweetsDataSet(args.data_path)
@@ -145,7 +149,8 @@ def main(args):
     )
 
     retrieved_indexes, retrieved_scores = retrieve(
-        retrieve_model, 'homeless',
+        retrieve_model,
+        search_query,
         docs_embeddings,
         score_function='cosine',
         threshold=0.5,
@@ -157,7 +162,7 @@ def main(args):
     # re ranked by thresh
     re_ranked_indexes, re_ranked_scores = re_rank_thresh(
         cross_encoder,
-        'homeless',
+        search_query,
         retrieved_texts,
         thresh=0.5,
         min_num=1
@@ -176,4 +181,4 @@ if __name__ == '__main__':
     arg_parser.add_argument('--cross_encoder_model', type=str, default='cross-encoder/ms-marco-MiniLM-L-6-v2')
     arg_parser.add_argument('--device', type=str, default=None, help='cpu, cuda, mps')
     args = arg_parser.parse_args()
-    main(args)
+    main(args, )
