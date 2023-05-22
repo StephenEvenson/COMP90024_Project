@@ -7,7 +7,11 @@ import torch
 from sentence_transformers import SentenceTransformer, CrossEncoder, util
 from tqdm import tqdm
 
-from dataset import TweetsDataSet
+from .dataset import TweetsDataSet
+
+
+def compute_one_embedding(model, text, device=None):
+    return model.encode([text], convert_to_tensor=True, show_progress_bar=False, device=device)
 
 
 def get_retrieve_embeddings(
@@ -15,7 +19,7 @@ def get_retrieve_embeddings(
         texts: list[str],
         show_progress_bar=True,
         dump_file=None,
-        device='cuda'
+        device=None
 ):
     if dump_file and os.path.exists(dump_file):
         tqdm.write(f"Embeddings exist in file {dump_file}, loading...")
@@ -48,12 +52,12 @@ def get_retrieve_embeddings(
     return embeddings
 
 
-def get_retrieve_model(model_name_or_path='msmarco-MiniLM-L-6-v3', device='cuda'):
+def get_retrieve_model(model_name_or_path='msmarco-MiniLM-L-6-v3', device=None):
     model = SentenceTransformer(model_name_or_path, device=device)
     return model
 
 
-def get_cross_encoder_model(model_name_or_path='cross-encoder/ms-marco-MiniLM-L-6-v2', device='cuda'):
+def get_cross_encoder_model(model_name_or_path='cross-encoder/ms-marco-MiniLM-L-6-v2', device=None):
     model = CrossEncoder(model_name_or_path, device=device)
     return model
 
@@ -170,6 +174,6 @@ if __name__ == '__main__':
     arg_parser.add_argument('--data_path', type=str, default='data/tweets_geo_merged.jsonl')
     arg_parser.add_argument('--retrieve_model', type=str, default='sentence-transformers/msmarco-MiniLM-L-6-v3')
     arg_parser.add_argument('--cross_encoder_model', type=str, default='cross-encoder/ms-marco-MiniLM-L-6-v2')
-    arg_parser.add_argument('--device', type=str, default='cuda')
+    arg_parser.add_argument('--device', type=str, default=None, help='cpu, cuda, mps')
     args = arg_parser.parse_args()
     main(args)
