@@ -9,13 +9,15 @@ import ChartTwo from '../../components/ChartTwo';
 import ChatCard from '../../components/ChatCard';
 import TableOne from '../../components/TableOne';
 import MapHover from "../../components/maps/mapHover";
+import useData from "../../hooks/useData";
 
 const ECommerce = () => {
+  const [{data, isLoading, isError}, setUrl] = useData('https://jsonplaceholder.typicode.com/users', []);
+  console.log({data, isLoading, isError});
   return (
     <DefaultLayout>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-5 2xl:gap-7.5">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
         {/* # Homeless topics */}
-        <CardOne/>
         <CardOne/>
         {/* # Homeless topics */}
         <CardTwo/>
