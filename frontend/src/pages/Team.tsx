@@ -1,7 +1,7 @@
 import React from "react";
 
 
-import DefaultLayout from "../layout/DefaultLayout";
+import DefaultLayout from "../components/layout/DefaultLayout";
 
 export default function Team() {
   return (

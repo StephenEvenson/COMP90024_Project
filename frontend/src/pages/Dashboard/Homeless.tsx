@@ -1,4 +1,4 @@
-import DefaultLayout from '../../layout/DefaultLayout';
+import DefaultLayout from '../../components/layout/DefaultLayout';
 import CardFour from '../../components/CardFour';
 import CardOne from '../../components/CardOne';
 import CardThree from '../../components/CardThree';

@@ -11,26 +11,26 @@ export default createBrowserRouter([
   {
     path: "/",
     element: <Homeless/>,
-  },
-  {
-    path: "/dashboard",
-    element: <Homeless/>,
     errorElement: <ErrorPage/>,
-    children: [
-      {
-        path: "homeless",
-        element: <Homeless/>,
-      },
-      {
-        path: "sentiment",
-        element: <Sentiment/>,
-      }, {
-        path: "language",
-        element: <Language/>,
-      }
-    ]
-  }, {
-    path: "team",
-    element: <Team/>
-  }
+    children: [{
+      path: "/dashboard",
+      element: <Homeless/>,
+      children: [
+        {
+          path: "homeless",
+          element: <Homeless/>,
+        },
+        {
+          path: "sentiment",
+          element: <Sentiment/>,
+        }, {
+          path: "language",
+          element: <Language/>,
+        }
+      ]
+    }, {
+      path: "team",
+      element: <Team/>
+    }]
+  },
 ]);

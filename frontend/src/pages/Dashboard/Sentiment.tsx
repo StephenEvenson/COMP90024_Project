@@ -7,7 +7,7 @@ import ChartThree from '../../components/ChartThree';
 import ChartTwo from '../../components/ChartTwo';
 import ChatCard from '../../components/ChatCard';
 import TableOne from '../../components/TableOne';
-import DefaultLayout from '../../layout/DefaultLayout';
+import DefaultLayout from '../../components/layout/DefaultLayout';
 import MapHover from "../../components/maps/mapHover";
 
 const ECommerce = () => {
