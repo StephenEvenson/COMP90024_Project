@@ -10,17 +10,36 @@ import TeamCard from '../../components/TeamCard';
 import TableOne from '../../components/TableOne';
 import MapHover from "../../components/maps/mapHover";
 import useData from "../../hooks/useData";
+import MessageBox from "../../components/MessageBox/MessageBox";
+
+const messages= [
+  {
+    id: '1',
+    text: 'Lorem ipsum dolor sit amet, con',
+  },
+  {
+    id: '2',
+    text: 'Lorem ipsum dolor sit amet, cue, at rutrum nursus faucibus finibus. ',
+  },
+  {
+    id: '3',
+    text: 'Lorem ipsum dolor sit amet, consectetur adise cursus faucibus finibus. ',
+  }
+]
 
 const ECommerce = () => {
-  const [{data, isLoading, isError}, setUrl] = useData('https://jsonplaceholder.typicode.com/users', []);
-  console.log({data, isLoading, isError});
+  // const [{data, isLoading, isError}, setUrl] = useData('https://jsonplaceholder.typicode.com/users', []);
+  // console.log({data, isLoading, isError});
   return (
     <DefaultLayout>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
         {/* # Homeless topics */}
-        <CardOne/>
+        {/*<CardOne/>*/}
         {/* # Homeless topics */}
-        <CardTwo/>
+        <div className='col-span-2'>
+          <MessageBox max_num={10}  />
+        </div>
+        {/*<CardTwo/>*/}
         <CardThree/>
         <CardFour/>
       </div>
