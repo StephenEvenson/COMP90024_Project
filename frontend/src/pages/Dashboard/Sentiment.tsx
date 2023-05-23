@@ -5,7 +5,7 @@ import CardTwo from '../../components/CardTwo';
 import ChartOne from '../../components/ChartOne';
 import ChartThree from '../../components/ChartThree';
 import ChartTwo from '../../components/ChartTwo';
-import ChatCard from '../../components/ChatCard';
+import TeamCard from '../../components/TeamCard';
 import TableOne from '../../components/TableOne';
 import DefaultLayout from '../../components/layout/DefaultLayout';
 import MapHover from "../../components/maps/mapHover";
@@ -33,7 +33,7 @@ const ECommerce = () => {
         <div className="col-span-12 xl:col-span-8">
           <TableOne/>
         </div>
-        <ChatCard/>
+        <TeamCard/>
       </div>
     </DefaultLayout>
   );
