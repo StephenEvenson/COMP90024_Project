@@ -1,0 +1,6 @@
+{
+  "by_geo": {
+    "map": "function(doc) { if (doc.geo) { emit(doc.geo, 1); } }",
+    "reduce": "function(keys, values, rereduce) { if (rereduce){ return sum(values); } else { return values.length; } }"
+  }
+}

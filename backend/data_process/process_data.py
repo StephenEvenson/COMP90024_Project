@@ -7,13 +7,9 @@ import couchdb
 
 from tqdm import tqdm
 from mpi4py import MPI
-from CouchAPI import CouchAPI
 
-# Constants
-BATCH_SIZE = 1_000
-TWITTER_HUGE_JSON_PATH = '../twitter-huge.json/mnt/ext100/twitter-huge.json'
-DB_NAME = 'raw_tweets_geo_2'
-SERVER_URL = 'http://localhost:5984/'
+from backend.database.couch_api import CouchAPI
+from backend.data_process.phn_api import PHNAPI
 
 # MPI settings
 comm = MPI.COMM_WORLD
@@ -21,19 +17,21 @@ rank = comm.Get_rank()
 world_size = comm.Get_size()
 
 argparser = argparse.ArgumentParser()
-argparser.add_argument('--json_path', type=str, default=TWITTER_HUGE_JSON_PATH)
-argparser.add_argument('--db_name', type=str, default=DB_NAME)
-argparser.add_argument('--server_url', type=str, default=SERVER_URL)
-argparser.add_argument('--batch_size', type=int, default=BATCH_SIZE)
+argparser.add_argument('--twitter_json_path', type=str, default='backend/twitter-huge.json/mnt/ext100/twitter-huge.json')
+argparser.add_argument('--phn_memory_file', type=str, default='backend/data_process/phn_memory.json')
+argparser.add_argument('--db_name', type=str, default='raw_tweets_processed_3')
+argparser.add_argument('--server_url', type=str, default='http://192.168.0.80:5984/')
+argparser.add_argument('--batch_size', type=int, default=1_000)
 args = argparser.parse_args()
 
+phn_memory_file = args.phn_memory_file
 db_name = args.db_name
 server_url = args.server_url
-couch = CouchAPI(server_url, username='admin', password='admin')
+couch_api = CouchAPI(server_url, username='admin', password='admin')
 
 if rank == 0:
     try:
-        db = couch.create(db_name)
+        db = couch_api.create(db_name)
     except couchdb.http.PreconditionFailed:
         pass
     print(f'Rank: {rank} Create database, db_name: {db_name}')
@@ -41,43 +39,57 @@ if rank == 0:
 time.sleep(1)
 print(f'Rank: {rank} Waiting for database to be created')
 comm.Barrier()
-db = couch[db_name]
+db = couch_api[db_name]
 
 
 def seek_end_of_line(mmap_obj: mmap.mmap, start_offset: int, end_offset: int):
     return mmap_obj.find(b'\r\n', start_offset, end_offset) + 2
 
 
-def get_file_size(json_path: str):
-    return os.stat(json_path).st_size
+def get_file_size(twitter_json_path: str):
+    return os.stat(twitter_json_path).st_size
 
 
 def get_json_line(byte_text: bytes):
     return byte_text.decode('utf8').rstrip(',\r\n')
 
 
+phn_api = PHNAPI(phn_memory_file)
+
+
 def handle_tweet(item):
-    tweet = {
-        '_id': item['id'],
-        'author_id': item['doc']['data']['author_id'],
-        'created_at': item['doc']['data']['created_at'],
-        'geo': item['doc']['data'].get('geo', {}),
-        'lang': item['doc']['data']['lang'],
-        'sentiment': item['doc']['data']['sentiment'],
-        'tokens': item['value']['tokens'],
-        'text': item['doc']['data']['text'],
-    }
-    return tweet
+    try:
+        if item['doc']['data']['sentiment'] == 0:
+            return None
+
+        bbox = item['doc']['includes']['places'][0]['geo']['bbox']
+        phn = phn_api.get_phn_by_bbox(bbox)
+        if phn is None:
+            return None
+
+        tweet = {
+            '_id': item['id'],
+            'author_id': item['doc']['data']['author_id'],
+            'created_at': item['doc']['data']['created_at'],
+            'geo': phn,
+            'lang': item['doc']['data']['lang'],
+            'sentiment': item['doc']['data']['sentiment'],
+            'tokens': item['value']['tokens'],
+            'text': item['doc']['data']['text'],
+        }
+        return tweet
+    except (AttributeError, KeyError, TypeError):
+        return None
 
 
-def process(json_path='data/twitter-huge.json', batch_size=1_000):
+def process(twitter_json_path='data/twitter-huge.json', batch_size=1_000):
     start_time = time.time()
-    file_size = get_file_size(json_path)
+    file_size = get_file_size(twitter_json_path)
     block_size = int(file_size / world_size)
     start_offset = rank * block_size if rank != 0 else 0
     end_offset = (rank + 1) * block_size if rank != world_size - 1 else file_size
 
-    f = open(json_path, 'rb')
+    f = open(twitter_json_path, 'rb')
     mmap_obj = mmap.mmap(f.fileno(), length=0, access=mmap.ACCESS_READ)
 
     real_start_offset = seek_end_of_line(mmap_obj, start_offset, start_offset + 5000)
@@ -107,16 +119,11 @@ def process(json_path='data/twitter-huge.json', batch_size=1_000):
 
         new_tweet = handle_tweet(item)
 
-        if new_tweet['geo'] != {}:
+        if new_tweet is not None:
             jsons.append(new_tweet)
             if len(jsons) >= batch_size:
                 db.save_batch(jsons)
                 jsons = []
-
-        # jsons.append(new_tweet)
-        # if len(jsons) >= batch_size:
-        #     db.save_batch(jsons)
-        #     jsons = []
 
         if rank == pbar_rank:
             pbar.update((new_tell - tell) / total_bytes * 100)
@@ -148,23 +155,7 @@ def process(json_path='data/twitter-huge.json', batch_size=1_000):
 
 
 def main():
-    db.create_view('by_geo')
-
-    process(args.json_path, args.batch_size)
-
-    def query_all_data(db, view_name):
-        page_number = 0
-        while True:
-            skip = page_number * 5
-            page_results = db.query_data_from_view(view_name, limit=50, skip=skip)
-            if not page_results:
-                break
-            for key, value in page_results:
-                print(f'Key: {key}, Value: {value}')
-            page_number += 1
-
-    # Query all data
-    query_all_data(db, 'by_geo')
+    process(args.twitter_json_path, args.batch_size)
 
 
 if __name__ == '__main__':
