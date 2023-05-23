@@ -62,8 +62,13 @@ cross_model = get_cross_encoder_model()
 retrieve_model = get_retrieve_model()
 
 
-def compute_embedding(text):
+def compute_embedding(text: str) -> np.ndarray | torch.Tensor:
     return retrieve_model.encode([text], convert_to_tensor=True, show_progress_bar=False)
+
+
+def compute_cross_score(query: str, doc: str) -> float:
+    model_input = [[query, doc]]
+    return model.predict(model_input, convert_to_numpy=True, show_progress_bar=False)[0]
 
 
 def retrieve(
