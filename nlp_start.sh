@@ -3,7 +3,8 @@
 python backend/nlp/abusive_interface.py
 python backend/nlp/search_interface.py
 python backend/nlp/sentiment_interface.py
-whoami
+
+echo "start nlp server"
 while :
   do
     /data/app/wait-for-it.sh "$COUCHDB_HOST":"$COUCHDB_PORT" --timeout=5
