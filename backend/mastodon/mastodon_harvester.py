@@ -38,7 +38,9 @@ def nlp_req(query, doc=None, path='/get_abusive_score'):
     req_data = {'query': query}
     if doc is not None:
         req_data = {'query': query, 'doc': doc}
-    response = requests.post(f'http://{nlp_host}:{nlp_port}' + path, json=req_data, headers={
+    req_url = f'http://{nlp_host}:{nlp_port}' + path
+    print(req_url)
+    response = requests.post(req_url, json=req_data, headers={
         'Content-Type': 'application/json'
     })
     return float(json.loads(response.text).get('score'))
