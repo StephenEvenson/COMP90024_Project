@@ -11,7 +11,7 @@ ENV PYTHONUNBUFFERED 1
 RUN apt-get -y install gcc libffi-dev && pip install --upgrade pip && pip install -r backend/nlp/requirements.txt
 
 # 指明监听的端口
-EXPOSE 8080
+EXPOSE 8000
 
 # 运行的命令
 CMD ["uvicorn", "backend.nlp.nlp_server:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
