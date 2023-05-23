@@ -1,4 +1,4 @@
-FROM bitnami/pytorch:latest
+FROM python:3.10
 
 USER root
 WORKDIR /data/app
