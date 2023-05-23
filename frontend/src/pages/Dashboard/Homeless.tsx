@@ -9,11 +9,11 @@ import ChartTwo from '../../components/ChartTwo';
 import TeamCard from '../../components/TeamCard';
 import TableOne from '../../components/TableOne';
 import MapHover from "../../components/maps/mapHover";
-import useData from "../../hooks/useData";
+// import useData from "../../hooks/useData";
 import MessageBox from "../../components/MessageBox/MessageBox";
 
 
-const ECommerce = () => {
+const HomelessPage = () => {
   // const [{data, isLoading, isError}, setUrl] = useData('https://jsonplaceholder.typicode.com/users', []);
   // console.log({data, isLoading, isError});
   return (
@@ -46,4 +46,4 @@ const ECommerce = () => {
   );
 };
 
-export default ECommerce;
+export default HomelessPage;

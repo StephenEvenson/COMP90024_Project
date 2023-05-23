@@ -2,17 +2,10 @@ import React, {useEffect, useState} from "react";
 import FlipMove from 'react-flip-move';
 import {BiMessageAltDots} from "react-icons/bi";
 import {getMastodonLatest} from "../../api/api";
-
-interface Message {
-  id: string,
-  content: string,
-  sentiment_score: number,
-  homeless_relative_score: number
-}
-
+import {MessageItem} from "../../types";
 
 function List(props: {
-  items: Message [];
+  items: MessageItem [];
   removeItem: (index: number) => void;
 }) {
   const {items, removeItem} = props;
@@ -22,7 +15,7 @@ function List(props: {
       {items.map((item, index) => (
         <div
           className='w-full rounded odd:bg-gray dark:bg-boxdark dark:text-body dark:odd:text-meta-2'
-          key={item.id}
+          key={item.id + index}
           onClick={() => removeItem(index)}
         >
           <div
@@ -42,7 +35,7 @@ function List(props: {
 
 function RealTimeScrollingComponent(props: { max_num: number }) {
   const {max_num} = props;
-  const [items, setItems] = useState([] as Message[]);
+  const [items, setItems] = useState([] as MessageItem[]);
 
   const handleRemoveItem = (index: number) => {
     setItems((prevItems) => {
@@ -56,13 +49,13 @@ function RealTimeScrollingComponent(props: { max_num: number }) {
     // fetch data from server every 3 seconds and update the state
     const interval = 3;
     const initData = async () => {
-      const mess = await getMastodonLatest(interval) as Message[];
+      const mess = await getMastodonLatest(interval) as MessageItem[];
       setItems(mess);
     }
     initData()
 
     const intervalId = setInterval(async () => {
-      const mess = await getMastodonLatest(interval) as Message[];
+      const mess = await getMastodonLatest(interval) as MessageItem[];
       setItems(prevMessages => [...prevMessages, ...mess]);
     }, interval * 1000);
     return () => clearInterval(intervalId);
