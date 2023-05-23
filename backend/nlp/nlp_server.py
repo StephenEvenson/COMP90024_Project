@@ -2,7 +2,7 @@ import numpy as np
 from fastapi import FastAPI, BackgroundTasks
 from pydantic import BaseModel
 
-from retrieve_rerank import get_cross_score, get_cross_encoder_model, get_retrieve_model, compute_one_embedding
+from search_interface import get_cross_score, get_cross_encoder_model, get_retrieve_model, compute_embedding
 
 app = FastAPI()
 
@@ -45,7 +45,7 @@ async def get_score(req: CrossScoreReq):
 
 @app.post("/update_embedding")
 async def update_embedding(req: UpdateEmbeddingReq):
-    new_embedding = compute_one_embedding(retrieve_model, req.query, device='cpu')
+    new_embedding = compute_embedding(req.query)
     all_texts.append(req.query)
     all_embeddings.append(new_embedding)
     return UpdateEmbeddingRes(query=req.query, total=len(all_texts))
