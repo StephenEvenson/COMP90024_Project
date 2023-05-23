@@ -9,7 +9,7 @@ ENV PYTHONUNBUFFERED 1
 
 
 RUN apt-get -y install gcc libffi-dev  \
-    && pip install --upgrade pip setuptools wheel torch  \
+    && pip install --upgrade pip setuptools wheel torch==1.8.1+cpu  \
     && pip install -r backend/nlp/requirements.txt
 
 # 指明监听的端口
