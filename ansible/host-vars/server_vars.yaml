@@ -1,0 +1,33 @@
+volumes:
+  - device: /dev/vdb
+    mountpoint: /data
+  - device: /dev/vdc
+    mountpoint: /var/lib/docker
+
+
+proxy_env:
+  HTTP_PROXY: http://wwwproxy.unimelb.edu.au:8000/
+  HTTPS_PROXY: http://wwwproxy.unimelb.edu.au:8000/
+  http_proxy: http://wwwproxy.unimelb.edu.au:8000/
+  https_proxy: http://wwwproxy.unimelb.edu.au:8000/
+  no_proxy: localhost,127.0.0.1,localaddress,172.16.0.0/12,.melbourne.rc.nectar.org.au,.storage.u nimelb.edu.au,.cloud.unimelb.edu.au
+
+
+# git repo
+access_token: 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
+git_repo: https://StephenEvenson:{{access_token}}@github.com/StephenEvenson/COMP90024_Project.git
+
+mastodons:
+  - name: mastodon_au_social
+    API_URL: https://aus.social
+    ACCESS_TOKEN: x8UJOO1_G6AiB_dJ29GixEidEfianC5NjLHcAMoaPzc
+  - name: mastodon_au
+    API_URL: https://mastodon.au
+    ACCESS_TOKEN: -zFEOt4o1q4Iq4y_sGDFZPKSNFx6pUU6-derr-ACY1I
+  - name: mastodon_tictoc_social
+    API_URL: https://tictoc.social
+    ACCESS_TOKEN: aSycXSKYU-Q60q5MAaPmreEIDZveXOQdBhUKBKhj8VE
+
+ports:
+  nlp: 8180
+  couchdb: 5984

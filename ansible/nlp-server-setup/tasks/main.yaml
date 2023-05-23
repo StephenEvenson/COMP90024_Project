@@ -1,0 +1,67 @@
+# Clone source code repository
+- name: Clone the code repository into home directory
+  git:
+    repo: "{{git_repo}}"
+    dest: ~/COMP90024_Project
+    single_branch: yes
+    version: master
+  environment: "{{ proxy_env }}"
+  become: yes
+
+# Create Docker config directory
+- name: Make sure that Docker config directory exists
+  become: yes
+  file:
+    path: '~/.docker'
+    state: 'directory'
+
+# Set Docker proxy for University of Melbourne Research Cloud
+- name: Ensure Docker client proxy settings are present on the server
+  become: yes
+  copy:
+    content: "{{ docker_proxy_settings }}"
+    dest: ~/.docker/config.json
+
+# Build Docker image
+- name: Build an image and push it to local repo
+  docker_image:
+    build:
+      path: '~/COMP90024_Project'
+      dockerfile: Nlp.Dockerfile
+      pull: yes
+    name: nlp_server
+    tag: latest
+    source: build
+    force_source: yes
+  become: yes
+  environment: "{{ proxy_env }}"
+
+# Stop Docker container
+- name: Stop Data Docker container
+  become: yes
+  docker_container:
+    name: '{{ item.name }}'
+    state: absent
+  loop: "{{ mastodons }}"
+
+# Stop Docker container
+- name: Stop Docker container
+  become: yes
+  docker_container:
+    name: nlp_server
+    state: absent
+
+# Create new Docker container for data analytics scripts and start container
+- name: Create and start Docker container
+  become: yes
+  docker_container:
+    name: nlp_server
+    image: nlp_server
+    state: started
+    pull: false
+    recreate: true
+    published_ports:
+      - "{{ ports.nlp }}:8000"
+    env:
+      COUCHDB_HOST: "{{ groups['MasterNode'][0] }}"
+      COUCHDB_PORT: "{{ ports.couchdb }}"

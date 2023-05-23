@@ -43,27 +43,12 @@
   roles:
     - role: db-load-balancer-setup
 
+- hosts: ServerNodes[0]
+  vars_files:
+    - host-vars/server_vars.yaml
+  gather_facts: true
 
-## Install Twitter Harvester on all hosts
-#- hosts: DataNodes
-#  vars_files:
-#    - host_vars/environment_variables.yaml
-#  gather_facts: true
-#
-#  roles:
-#     - role: twitter-harvester-setup
-#
-#
-## Install data analytics scripts and React frontend
-#- hosts: ProcessingNodes
-#  vars_files:
-#    - host_vars/environment_variables.yaml
-#  gather_facts: true
-#
-#  roles:
-#    - role: nodes-common
-#    - role: nodes-docker-install
-#    - role: nodes-volume-mount
-#    - role: aurin-twitter-analytics-setup
-#    - role: gps-processing-setup
-#    - role: frontend-setup
+  roles:
+    - role: nlp-server-setup
+    - role: mastodon-setup
+    - role: frontend-setup
