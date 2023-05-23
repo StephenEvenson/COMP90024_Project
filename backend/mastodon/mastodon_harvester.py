@@ -76,8 +76,7 @@ class Listener(StreamListener):
                 'created_at': json_single['created_at'],
                 'language': json_single['language']
             }
-            print(new_store)
-            # db.save(new_store)
+            db.save(new_store)
 
         except:
             print("error")
