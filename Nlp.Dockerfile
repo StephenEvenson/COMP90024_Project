@@ -1,4 +1,4 @@
-FROM python:3.10
+FROM bitnami/pytorch:latest
 
 WORKDIR /data/app
 
@@ -10,7 +10,6 @@ ENV PYTHONUNBUFFERED 1
 
 RUN apt-get -y install gcc libffi-dev  \
     && pip install --upgrade pip setuptools wheel  \
-    && pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu  \
     && pip install -r backend/nlp/requirements.txt
 
 # 指明监听的端口
