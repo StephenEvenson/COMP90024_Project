@@ -68,7 +68,7 @@ def compute_embedding(text: str) -> np.ndarray | torch.Tensor:
 
 def compute_cross_score(query: str, doc: str) -> float:
     model_input = [[query, doc]]
-    return model.predict(model_input, convert_to_numpy=True, show_progress_bar=False)[0]
+    return cross_model.predict(model_input, convert_to_numpy=True, show_progress_bar=False)[0]
 
 
 def retrieve(
