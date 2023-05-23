@@ -13,4 +13,3 @@ typing_extensions
 uvicorn
 tqdm
 sentence-transformers
-pytorch
