@@ -1,26 +1,29 @@
-import couchdb
 import json
-from mastodon import Mastodon, StreamListener
-import re
 import os
+import re
 
-db_host = os.environ.get('READ_DB_HOST')
-db_port = os.environ.get('READ_DB_PORT')
+import couchdb
+from mastodon import Mastodon, StreamListener
 
-# couchdb login data
-admin = 'admin'
-password = 'admin'
+from backend.nlp import compute_cross_score, get_abusive_score
 
-# connect to couchdb
-url = f'http://{admin}:{password}@{db_host}:{db_port}/'
-couch = couchdb.Server(url)
-
-db_name = 'mastodon'
-if db_name not in couch:
-    db = couch.create(db_name)
-else:
-    db = couch[db_name]
-
+# db_host = os.environ.get('READ_DB_HOST')
+# db_port = os.environ.get('READ_DB_PORT')
+#
+# # couchdb login data
+# admin = 'admin'
+# password = 'admin'
+#
+# # connect to couchdb
+# url = f'http://{admin}:{password}@{db_host}:{db_port}/'
+# couch = couchdb.Server(url)
+#
+# db_name = 'mastodon'
+# if db_name not in couch:
+#     db = couch.create(db_name)
+# else:
+#     db = couch[db_name]
+#
 # mastodon message (with url and private token)
 m = Mastodon(
     api_base_url='https://aus.social',
@@ -46,9 +49,20 @@ class Listener(StreamListener):
             # Replace HTML entities
             readable_string = no_special_chars_string.replace('&gt;', '>')
 
+            abusive_score = get_abusive_score(readable_string)
+            homeless_relative_score = compute_cross_score('homeless', readable_string)
+
             # create a new dictionary to store the capture data
-            new_store = {'id': json_single['id'], 'content': readable_string, 'created_at': json_single['created_at']}
-            db.save(new_store)
+            new_store = {
+                'id': json_single['id'],
+                'content': readable_string,
+                'abusive_score': abusive_score,
+                'homeless_relative_score': homeless_relative_score,
+                'created_at': json_single['created_at'],
+                'language': json_single['language']
+            }
+            print(new_store)
+            # db.save(new_store)
 
         except:
             print("error")
