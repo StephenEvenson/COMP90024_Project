@@ -1,5 +1,6 @@
 FROM bitnami/pytorch:latest
 
+USER root
 WORKDIR /data/app
 
 COPY . .
