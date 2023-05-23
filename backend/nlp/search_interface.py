@@ -179,11 +179,17 @@ def main(args, search_query='homeless'):
         print(f"{i}: {text} ({re_ranked_scores[i]})")
 
 
-# if __name__ == '__main__':
-#     arg_parser = argparse.ArgumentParser()
-#     arg_parser.add_argument('--data_path', type=str, default='data/tweets_geo_merged.jsonl')
-#     arg_parser.add_argument('--retrieve_model', type=str, default='sentence-transformers/msmarco-MiniLM-L-6-v3')
-#     arg_parser.add_argument('--cross_encoder_model', type=str, default='cross-encoder/ms-marco-MiniLM-L-6-v2')
-#     arg_parser.add_argument('--device', type=str, default=None, help='cpu, cuda, mps')
-#     args = arg_parser.parse_args()
-#     main(args, )
+def warm_up_abusive_model():
+    compute_cross_score('homeless', 'test')
+
+
+if __name__ == '__main__':
+    print("warm up model")
+    warm_up_abusive_model()
+    # arg_parser = argparse.ArgumentParser()
+    # arg_parser.add_argument('--data_path', type=str, default='data/tweets_geo_merged.jsonl')
+    # arg_parser.add_argument('--retrieve_model', type=str, default='sentence-transformers/msmarco-MiniLM-L-6-v3')
+    # arg_parser.add_argument('--cross_encoder_model', type=str, default='cross-encoder/ms-marco-MiniLM-L-6-v2')
+    # arg_parser.add_argument('--device', type=str, default=None, help='cpu, cuda, mps')
+    # args = arg_parser.parse_args()
+    # main(args, )

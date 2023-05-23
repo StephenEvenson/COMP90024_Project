@@ -19,5 +19,10 @@ def get_sentiment_scores(texts: list[str]) -> list[float]:
     return probs[:, 2].tolist()
 
 
+def warm_up_sentiment_model():
+    get_sentiment_score('test')
+
+
 if __name__ == '__main__':
-    print(get_sentiment_score('putangina mo'))
+    print("Warm up sentiment model")
+    warm_up_sentiment_model()

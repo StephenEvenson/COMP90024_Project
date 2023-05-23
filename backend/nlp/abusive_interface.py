@@ -19,4 +19,10 @@ def get_abusive_scores(texts: list[str]) -> list[float]:
     return probs[:, 1].tolist()
 
 
+def warm_up_abusive_model():
+    get_abusive_score('test')
 
+
+if __name__ == '__main__':
+    print("Warm up abusive model")
+    warm_up_abusive_model()
