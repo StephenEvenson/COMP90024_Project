@@ -8,7 +8,9 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 
-RUN apt-get -y install gcc libffi-dev && pip install --upgrade pip && pip install -r backend/nlp/requirements.txt
+RUN apt-get -y install gcc libffi-dev python3-dev  \
+    && pip install --upgrade pip setuptools wheel  \
+    && pip install -r backend/nlp/requirements.txt
 
 # 指明监听的端口
 EXPOSE 8000
