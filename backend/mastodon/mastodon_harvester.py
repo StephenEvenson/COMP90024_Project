@@ -6,12 +6,12 @@ import requests
 import couchdb
 from mastodon import Mastodon, StreamListener
 
-
 db_host = os.environ.get('WRITE_DB_HOST')
 db_port = os.environ.get('WRITE_DB_PORT')
 nlp_host = os.environ.get('NLP_HOST')
 nlp_port = os.environ.get('NLP_PORT')
-
+api_url = os.environ.get('API_URL')
+access_token = os.environ.get('ACCESS_TOKEN')
 
 # couchdb login data
 admin = 'admin'
@@ -29,9 +29,13 @@ else:
 
 # mastodon message (with url and private token)
 m = Mastodon(
-    api_base_url='https://aus.social',
-    access_token='x8UJOO1_G6AiB_dJ29GixEidEfianC5NjLHcAMoaPzc'
+    api_base_url=api_url,
+    access_token=access_token
 )
+# m = Mastodon(
+#     api_base_url=api_url,
+#     access_token='x8UJOO1_G6AiB_dJ29GixEidEfianC5NjLHcAMoaPzc'
+# )
 
 
 def nlp_req(query, doc=None, path='/get_abusive_score'):
