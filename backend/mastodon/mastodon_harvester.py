@@ -7,8 +7,8 @@ import couchdb
 from mastodon import Mastodon, StreamListener
 
 
-db_host = os.environ.get('READ_DB_HOST')
-db_port = os.environ.get('READ_DB_PORT')
+db_host = os.environ.get('WRITE_DB_HOST')
+db_port = os.environ.get('WRITE_DB_PORT')
 nlp_host = os.environ.get('NLP_HOST')
 nlp_port = os.environ.get('NLP_PORT')
 
@@ -34,11 +34,11 @@ m = Mastodon(
 )
 
 
-def nlp_req(query, doc=None):
+def nlp_req(query, doc=None, path='/get_abusive_score'):
     req_data = {'query': query}
     if doc is not None:
         req_data = {'query': query, 'doc': doc}
-    response = requests.post(f'http://{nlp_host}:{nlp_port}/get_abusive_score', json=req_data, headers={
+    response = requests.post(f'http://{nlp_host}:{nlp_port}' + path, json=req_data, headers={
         'Content-Type': 'application/json'
     })
     return float(json.loads(response.text).get('score'))
@@ -63,8 +63,8 @@ class Listener(StreamListener):
             readable_string = no_special_chars_string.replace('&gt;', '>')
 
             abusive_score = nlp_req(readable_string)
-            homeless_relative_score = nlp_req('homeless', readable_string)
-            sentiment_score = nlp_req(readable_string)
+            homeless_relative_score = nlp_req('homeless', readable_string, '/get_score')
+            sentiment_score = nlp_req(readable_string, '/get_sentiment_score')
 
             # create a new dictionary to store the capture data
             new_store = {

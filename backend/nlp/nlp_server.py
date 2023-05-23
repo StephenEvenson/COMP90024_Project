@@ -2,15 +2,15 @@ import numpy as np
 from fastapi import FastAPI, BackgroundTasks
 from pydantic import BaseModel
 
-from search_interface import get_cross_score, get_cross_encoder_model, get_retrieve_model, compute_embedding
+from backend.nlp import compute_cross_score, compute_embedding, get_abusive_score, get_sentiment_score
 
 app = FastAPI()
 
-retrieve_model_name = 'msmarco-MiniLM-L-6-v3'
-cross_model_name = 'cross-encoder/ms-marco-MiniLM-L-6-v2'
-
-retrieve_model = get_retrieve_model(retrieve_model_name, device='cpu')
-cross_model = get_cross_encoder_model(cross_model_name, device='cpu')
+# retrieve_model_name = 'msmarco-MiniLM-L-6-v3'
+# cross_model_name = 'cross-encoder/ms-marco-MiniLM-L-6-v2'
+#
+# retrieve_model = get_retrieve_model(retrieve_model_name, device='cpu')
+# cross_model = get_cross_encoder_model(cross_model_name, device='cpu')
 
 all_texts = []
 all_embeddings = []
@@ -22,9 +22,14 @@ class CrossScoreReq(BaseModel):
 
 
 class CrossScoreRes(BaseModel):
+    score: float
+
+
+class ScoreReq(BaseModel):
     query: str
-    doc: str
-    model: str
+
+
+class ScoreRes(BaseModel):
     score: float
 
 
@@ -39,8 +44,20 @@ class UpdateEmbeddingRes(BaseModel):
 
 @app.post("/get_score")
 async def get_score(req: CrossScoreReq):
-    score = get_cross_score(cross_model, req.query, req.doc)
-    return CrossScoreRes(query=req.query, doc=req.doc, model=cross_model, score=score)
+    score = compute_cross_score(req.query, req.doc)
+    return CrossScoreRes(score=score)
+
+
+@app.post("/get_abusive_score")
+async def get_a_score(req: ScoreReq):
+    score = get_abusive_score(req.query)
+    return ScoreRes(score=score)
+
+
+@app.post("/get_sentiment_score")
+async def get_s_score(req: ScoreReq):
+    score = get_sentiment_score(req.query)
+    return ScoreRes(score=score)
 
 
 @app.post("/update_embedding")
@@ -54,5 +71,4 @@ async def update_embedding(req: UpdateEmbeddingReq):
 
 
 # usage:
-# cd backend/nlp/
-# uvicorn nlp_server:app --reload
+# uvicorn backend.nlp.nlp_server:app --host 0.0.0.0 --port 8000 --reload
