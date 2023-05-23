@@ -1,0 +1,254 @@
+# Create and configure an MRC instance
+- name: Create and configure an MRC instance
+  hosts: localhost
+  gather_facts: no
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: Create a volume
+      openstack.cloud.volume:
+        display_name: myvolume
+        availability_zone: "{{availability_zone}}"
+        size: 200
+        state: present
+      register: volume
+    
+    # - name: Debug volume output
+    #   ansible.builtin.debug:
+    #     var: volume
+
+    - name: Create an MRC instance
+      openstack.cloud.server:
+        auto_ip: false
+        availability_zone: "{{availability_zone}}"
+        flavor: "{{instance_flavor}}"
+        image: "{{instance_image}}"
+        key_name: "{{instance_key_name}}"
+        network: "{{instance_network}}"
+        name: "instance_demo_large"
+        security_groups: default,ssh
+        state: present
+        timeout: 600
+        wait: yes
+      register: os_instance
+
+    - name: Attach the volume to the instance
+      openstack.cloud.server_volume:
+        state: present
+        server: instance_demo_large
+        volume: "{{ volume.volume.id }}"
+
+    - name: Print return information
+      debug:
+        var: os_instance
+
+    - name: Add new instance to inventory
+      add_host:
+        name: "{{ os_instance.server.access_ipv4 }}"
+        groups: dynamic_hosts
+        ansible_ssh_user: ubuntu
+        ansible_ssh_private_key_file: ./ansible_key_72.pem
+
+    - name: Update hosts file with instance IP
+      lineinfile:
+        path: hosts
+        line: "{{ os_instance.server.access_ipv4 }} ansible_user=ubuntu ansible_verbosity=2 ansible_ssh_private_key_file=./ansible_key_72.pem"
+        state: present
+      delegate_to: localhost
+    
+    - name: Wait for SSH to become available
+      wait_for:
+        host: "{{ os_instance.server.access_ipv4 }}"
+        port: 22
+        state: started
+        delay: 10
+        timeout: 300
+      delegate_to: localhost
+
+# Configure the new MRC instance
+- name: Configure the new MRC instance
+  hosts: dynamic_hosts
+  gather_facts: no
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: Fix apt directory ownership and permissions
+      file:
+        path: /var/lib/apt/lists/
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Update apt cache
+      become: yes
+      become_user: root
+      apt:
+        update_cache: yes
+    
+    - name: Format the volume
+      ansible.builtin.command:
+        cmd: mkfs.ext4 /dev/vdb
+      become: yes
+
+    - name: Create mount directory
+      ansible.builtin.file:
+        path: /mnt/myvolume
+        state: directory
+      become: yes
+
+    - name: Mount the volume
+      ansible.builtin.mount:
+        path: /mnt/myvolume
+        src: /dev/vdb
+        fstype: ext4
+        state: mounted
+      become: yes
+
+    - name: Install Git, Docker and Node.js
+      become: yes
+      become_user: root
+      apt:
+        name:
+          - git
+          - docker.io
+          - nodejs
+        state: present
+
+    - name: Git clone the frontend
+      git:
+        repo: "{{my_frontend_git_repo}}"
+        dest: "{{root_path}}{{react_path}}"
+        single_branch: yes
+        version: main
+
+    - name: Git clone the backend
+      git:
+        repo: "{{my_backend_git_repo}}"
+        dest: "{{root_path}}{{django_path}}"
+        single_branch: yes
+        version: main
+
+# Deploy the CouchDB cluster
+- name: Deploy the CouchDB cluster
+  hosts: dynamic_hosts
+  gather_facts: no
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: Ensure Docker is running
+      become: yes
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Create Docker network
+      become: yes
+      docker_network:
+        name: couchdbnet
+        ipam_config:
+          - subnet: 172.25.0.0/24
+
+    - name: Pull the CouchDB image
+      become: yes
+      docker_image:
+        name: "{{ couchdb_image }}"
+        source: pull
+
+    - name: Ensure CouchDB containers are present
+      become: yes
+      docker_container:
+        name: "{{ item.name }}"
+        image: "{{ couchdb_image }}"
+        state: started
+        restart_policy: always
+        networks:
+          - name: couchdbnet
+        env:
+          COUCHDB_USER: "{{ couchdb_user }}"
+          COUCHDB_PASSWORD: "{{ couchdb_password }}"
+          COUCHDB_SECRET: "{{ couchdb_cookie }}"
+          ERL_FLAGS: "-setcookie \"{{ couchdb_cookie }}\" -name \"couchdb@{{ item.name }}\""
+        published_ports:
+          - "{{ item.port }}:5984"
+      loop:
+        - name: 172.25.0.2
+          port: 5984
+        - name: 172.25.0.3
+          port: 5985
+        - name: 172.25.0.4
+          port: 5986
+
+    # - name: Get CouchDB container IP addresses
+    #   become: yes
+    #   command: "docker inspect -f '{{ '{{' }} .NetworkSettings.Networks.couchdbnet.IPAddress {{ '}}' }}' couchdb{{ item }}"
+    #   register: ips
+    #   loop: ["1", "2", "3"]
+
+    - name: Add _users database to the cluster
+      uri:
+        url: "http://{{ couchdb_user }}:{{ couchdb_password }}@{{ item }}:5984/_users"
+        method: PUT
+        force_basic_auth: yes
+        status_code: [200, 201]
+      loop: ["172.25.0.2", "172.25.0.3", "172.25.0.4"]
+
+    - name: Setup CouchDB cluster
+      uri:
+        url: "http://{{ couchdb_user }}:{{ couchdb_password }}@172.25.0.2:5984/_cluster_setup"
+        method: POST
+        force_basic_auth: yes
+        status_code: [200, 201]
+        body_format: json
+        body:
+          action: "enable_cluster"
+          bind_address: "0.0.0.0"
+          username: "{{ couchdb_user }}"
+          password: "{{ couchdb_password }}"
+          port: 5984
+          remote_node: "{{ item }}"
+          node_count: 3
+          remote_current_user: "{{ couchdb_user }}"
+          remote_current_password: "{{ couchdb_password }}"
+      loop: ["172.25.0.2", "172.25.0.3", "172.25.0.4"]
+
+    - name: Add nodes to CouchDB cluster
+      uri:
+        url: "http://{{ couchdb_user }}:{{ couchdb_password }}@172.25.0.2:5984/_cluster_setup"
+        method: POST
+        force_basic_auth: yes
+        status_code: [200, 201]
+        body_format: json
+        body:
+          action: "add_node"
+          host: "{{ item }}"
+          port: 5984
+          username: "{{ couchdb_user }}"
+          password: "{{ couchdb_password }}"
+      loop: ["172.25.0.3", "172.25.0.4"]
+
+    - name: Finish the cluster setup
+      uri:
+        url: "http://{{ couchdb_user }}:{{ couchdb_password }}@172.25.0.2:5984/_cluster_setup"
+        method: POST
+        force_basic_auth: yes
+        status_code: [200, 201]
+        body_format: json
+        body:
+          action: "finish_cluster"
+
+    - name: Check CouchDB cluster membership
+      uri:
+        url: "http://{{ couchdb_user }}:{{ couchdb_password }}@{{ item }}:5984/_membership"
+        method: GET
+        force_basic_auth: yes
+        status_code: [200, 201]
+      register: membership
+      loop: ["172.25.0.2", "172.25.0.3", "172.25.0.4"]
+
+    - name: Create CouchDB database
+      uri:
+        url: "http://{{ couchdb_user }}:{{ couchdb_password }}@172.25.0.2:5984/twitter"
+        method: PUT
+        force_basic_auth: yes
+        status_code: [200, 201]

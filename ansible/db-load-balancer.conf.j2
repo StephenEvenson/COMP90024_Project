@@ -1,0 +1,13 @@
+upstream backend {
+  {% for host in groups['OtherNodes'] %}
+  server {{ hostvars[host]['inventory_hostname'] }}:5984;
+  {% endfor %}
+}
+
+server {
+  listen 5984;
+
+  location / {
+    proxy_pass http://backend;
+  }
+}

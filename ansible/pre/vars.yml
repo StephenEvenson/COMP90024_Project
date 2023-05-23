@@ -1,0 +1,22 @@
+openrc_file_path: ./unimelb-comp90024-2023-grp-72-openrc.sh
+root_path: /home/ubuntu/comp90024
+react_path: /frontend
+django_path: /backend
+
+# git repo
+my_personal_access_token: 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
+my_frontend_git_repo: https://BugMakerJarvis:{{my_personal_access_token}}@github.com/BugMakerJarvis/COMP90024-ASM2-Frontend.git
+my_backend_git_repo: https://BugMakerJarvis:{{my_personal_access_token}}@github.com/BugMakerJarvis/COMP90024-ASM2-Backend.git
+
+# mrc instance
+availability_zone: melbourne-qh2-uom
+instance_flavor: uom.mse.2c9g
+instance_image: bbaf16f8-2484-48d7-b455-42209cc4b8d2
+instance_key_name: ansible_key_72
+instance_network: qh2-uom
+
+# couchdb
+couchdb_image: couchdb:latest
+couchdb_user: admin
+couchdb_password: admin
+couchdb_cookie: a192aeb9904e6590849337933b000c99

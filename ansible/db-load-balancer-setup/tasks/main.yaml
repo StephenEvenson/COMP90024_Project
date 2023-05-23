@@ -1,0 +1,29 @@
+# Restart Docker daemon
+- name: Restart Docker service
+  become: yes
+  ansible.builtin.systemd:
+    name: docker
+    state: restarted
+
+- name: Pull the nginx image
+  docker_image:
+    name: nginx
+    source: pull
+  become: yes
+
+- name: Generate nginx.conf
+  template:
+    src: db-load-balancer.conf.j2
+    dest: /home/ubuntu/db-load-balancer.conf
+  become: yes
+
+- name: Start nginx container
+  docker_container:
+    name: db-load-balancer
+    image: nginx
+    state: started
+    ports:
+      - "5984:5984"
+    volumes:
+      - "/home/ubuntu/db-load-balancer.conf:/etc/nginx/conf.d/db-load-balancer.conf"
+  become: yes

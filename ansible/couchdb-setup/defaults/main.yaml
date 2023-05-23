@@ -1,0 +1,1 @@
+masternode: "{{ groups['MasterNode'][0] }}"
