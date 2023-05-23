@@ -12,20 +12,6 @@ import MapHover from "../../components/maps/mapHover";
 import useData from "../../hooks/useData";
 import MessageBox from "../../components/MessageBox/MessageBox";
 
-const messages= [
-  {
-    id: '1',
-    text: 'Lorem ipsum dolor sit amet, con',
-  },
-  {
-    id: '2',
-    text: 'Lorem ipsum dolor sit amet, cue, at rutrum nursus faucibus finibus. ',
-  },
-  {
-    id: '3',
-    text: 'Lorem ipsum dolor sit amet, consectetur adise cursus faucibus finibus. ',
-  }
-]
 
 const ECommerce = () => {
   // const [{data, isLoading, isError}, setUrl] = useData('https://jsonplaceholder.typicode.com/users', []);

@@ -1,9 +1,7 @@
-import FlipMove from 'react-flip-move';
 import React, {useEffect, useState} from "react";
+import FlipMove from 'react-flip-move';
 import {BiMessageAltDots} from "react-icons/bi";
-import {BsFillEmojiSmileFill, BsFillEmojiFrownFill, BsFillEmojiNeutralFill} from "react-icons/bs";
-import useData from "../../hooks/useData";
-import axios from "axios";
+import {getMastodonLatest} from "../../api/api";
 
 interface Message {
   id: string,
@@ -46,48 +44,33 @@ function RealTimeScrollingComponent(props: { max_num: number }) {
   const {max_num} = props;
   const [items, setItems] = useState([] as Message[]);
 
-  // const [{data, isLoading, isError}, setUrl] =  useData('/mastodon/new', []);
-  // console.log({data, isLoading, isError});
-  // const messages = data as {id: string, text: string}[];
   const handleRemoveItem = (index: number) => {
     setItems((prevItems) => {
       const updatedItems = [...prevItems];
-      updatedItems.splice(index, 1); // 从列表中删除指定索引的元素
+      updatedItems.splice(index, 1);
       return updatedItems;
     });
   };
-  // const fetchNewMessage = async () => {
-  //   const newMessage = new Date().toLocaleTimeString();
-  //   setItems(prevMessages => {
-  //     return [...prevMessages, {id: prevMessages.length + 1 + newMessage, content: newMessage}]
-  //   });
-  // };
-  // 每秒获取一次新消息
+
   useEffect(() => {
+    // fetch data from server every 3 seconds and update the state
     const interval = 3;
+    const initData = async () => {
+      const mess = await getMastodonLatest(interval) as Message[];
+      setItems(mess);
+    }
+    initData()
+
     const intervalId = setInterval(async () => {
-      const result = await axios(`/api/mastodon/new/${interval}`,);
-      const newMessages = result.data.docs as Message[];
-      // console.log(newMessages);
-      const mess = newMessages.map((message) => (
-        {
-          id: message.id,
-          content: message.content,
-          sentiment_score: message.sentiment_score,
-          homeless_relative_score: message.homeless_relative_score
-        }
-      ));
-      setItems(prevMessages => {
-        return [...prevMessages, ...mess]
-      });
+      const mess = await getMastodonLatest(interval) as Message[];
+      setItems(prevMessages => [...prevMessages, ...mess]);
     }, interval * 1000);
-
     return () => clearInterval(intervalId);
-
   }, []);
 
 
   useEffect(() => {
+    // make sure the number of items is less than max_num
     if (items.length > max_num) {
       handleRemoveItem(0)
     }
