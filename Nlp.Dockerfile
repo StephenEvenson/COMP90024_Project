@@ -8,7 +8,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 
-RUN apt-get -y install gcc libffi-dev python3-dev  \
+RUN apt-get -y install gcc libffi-dev  \
     && pip install --upgrade pip setuptools wheel  \
     && pip install -r backend/nlp/requirements.txt
 
