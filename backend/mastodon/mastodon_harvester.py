@@ -84,7 +84,7 @@ class Listener(StreamListener):
             db.save(new_store)
 
         except:
-            print("error")
+            print("Wait for next message")
 
 
 # open the harvest
