@@ -1,0 +1,94 @@
+# Create an instance on Unimelb Research Cloud
+- name: Create an instance
+  openstack.cloud.server:
+    name: '{{ item.name }}'
+    image: '{{ instance_image }}'
+    key_name: '{{ instance_key_name }}'
+    flavor: '{{ instance_flavor }}'
+    availability_zone: '{{ availability_zone }}'
+    security_groups: default,ssh,http
+    volumes: '{{ item.volumes }}'
+    network: '{{instance_network}}'
+    auto_floating_ip: false
+    wait: true
+    timeout: 600
+    state: present
+  loop: '{{ instances }}'
+  register: os_instance
+
+- debug:
+    msg: "Instance {{ item.server.name }} has been created. IP address is {{ item.server.addresses['qh2-uom-internal'][0]['addr'] }}"
+  loop: '{{ os_instance.results }}'
+  when: item.server is defined
+
+# - name: Wait for connection
+#   wait_for:
+#     host: "{{ item.server.addresses['qh2-uom-internal'][0]['addr'] }}"
+#     port: 443
+#     state: started
+#     delay: 10
+#     timeout: 300
+#   loop: '{{ os_instance.results }}'
+#   delegate_to: localhost
+
+- name: Wait for connection
+  ansible.builtin.wait_for_connection:
+    delay: 0
+    # delay: 60
+    timeout: 300
+  loop: '{{ os_instance.results }}'
+  when: item.server is defined
+
+# - name: Wait for connection
+#   ansible.builtin.shell: |
+#     set timeout 300
+#     ssh -i ansible_key_72.pem ubuntu@{{ item.server.addresses['qh2-uom-internal'][0]['addr'] }} -o StrictHostKeyChecking=no
+#     exit 0
+#   loop: '{{ os_instance.results }}'
+#   when: item.server is defined
+
+# Add hosts to Ansible in-memory inventory
+- name: Add host
+  add_host:
+    name: "{{ item.server.addresses['qh2-uom-internal'][0]['addr'] }}"
+    groups: AllNodes
+    ansible_user: ubuntu
+    ansible_ssh_private_key_file: ansible_key_72.pem
+  loop: '{{ os_instance.results }}'
+  when: item.server is defined
+
+- name: Set first host as ServerNodes
+  add_host:
+    name: "{{ groups['AllNodes'][0] }}"
+    groups: ServerNodes
+    ansible_user: ubuntu
+    ansible_ssh_private_key_file: ansible_key_72.pem
+  run_once: true
+
+- name: Set second host as MasterNode
+  add_host:
+    name: "{{ groups['AllNodes'][1] }}"
+    groups: MasterNode
+    ansible_user: ubuntu
+    ansible_ssh_private_key_file: ansible_key_72.pem
+  run_once: true
+
+- name: Add third and fourth hosts to OtherNodes
+  add_host:
+    name: "{{ item }}"
+    groups: OtherNodes
+    ansible_user: ubuntu
+    ansible_ssh_private_key_file: ansible_key_72.pem
+  loop: "{{ groups['AllNodes'][2:4] }}"
+
+- name: Add db host to DbNodes
+  add_host:
+    name: "{{ item }}"
+    groups: DbNodes
+    ansible_user: ubuntu
+    ansible_ssh_private_key_file: ansible_key_72.pem
+  loop: "{{ groups['AllNodes'][1:4] }}"
+
+- name: Print out the MasterNode and OtherNodes
+  debug:
+    msg: "MasterNode: {{ groups['MasterNode'] }}, OtherNodes: {{ groups['OtherNodes'] }}"

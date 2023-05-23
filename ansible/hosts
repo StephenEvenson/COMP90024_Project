@@ -1,1 +1,0 @@
-45.113.233.29 ansible_user=ubuntu ansible_verbosity=2 ansible_ssh_private_key_file=./ansible_key_72.pem
