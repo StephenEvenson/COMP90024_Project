@@ -65,8 +65,8 @@ class Listener(StreamListener):
             readable_string = no_special_chars_string.replace('&gt;', '>')
 
             abusive_score = nlp_req(readable_string)
-            homeless_relative_score = nlp_req('homeless', readable_string, '/get_score')
-            sentiment_score = nlp_req(readable_string, '/get_sentiment_score')
+            homeless_relative_score = nlp_req('homeless', readable_string, path='/get_score')
+            sentiment_score = nlp_req(readable_string, path='/get_sentiment_score')
 
             # create a new dictionary to store the capture data
             new_store = {
