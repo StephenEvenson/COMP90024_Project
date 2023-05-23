@@ -13,10 +13,11 @@ RUN apt-get update \
     && apt-get -y install gcc libffi-dev  \
     && pip install --upgrade pip setuptools wheel  \
     && pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu \
-    && pip install -r backend/nlp/requirements.txt
+    && pip install -r backend/nlp/requirements.txt \
+    && chmod +x nlp_start.sh  \
+    && chmod +x wait-for-it.sh
 
 
 EXPOSE 8000
 
-
-CMD ["uvicorn", "backend.nlp.nlp_server:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+ENTRYPOINT ["/data/app/nlp_start.sh"]
