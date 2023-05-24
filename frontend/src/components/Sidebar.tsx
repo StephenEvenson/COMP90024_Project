@@ -4,8 +4,7 @@ import SidebarLinkGroup from './SidebarLinkGroup';
 import {BiChevronDown, BiGridAlt, BiHappy, BiHomeAlt} from 'react-icons/bi';
 import {HiLanguage} from "react-icons/hi2";
 import {AiOutlineTeam} from "react-icons/ai";
-import {BsArrowBarLeft} from "react-icons/bs";
-
+import {BsArrowBarLeft, BsListUl} from "react-icons/bs";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -119,6 +118,14 @@ const Sidebar = ({sidebarOpen, setSidebarOpen}: SidebarProps) => {
             </h3>
 
             <ul className="mb-6 flex flex-col gap-1.5">
+              <NavLink
+                to="/"
+                className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                  pathname.includes('chart') && 'bg-graydark dark:bg-meta-4'
+                }`}
+              >
+                <BiGridAlt className='text-xl'/> Dashboard
+              </NavLink>
               {/* <!-- Menu Item Dashboard --> */}
               <SidebarLinkGroup
                 activeCondition={
@@ -142,8 +149,7 @@ const Sidebar = ({sidebarOpen, setSidebarOpen}: SidebarProps) => {
                             : setSidebarExpanded(true);
                         }}
                       >
-                        <BiGridAlt className='text-xl'/>
-                        Scenarios
+                        <BsListUl className='text-xl'/> Scenarios
                         <BiChevronDown
                           className={`absolute text-2xl right-4 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'}`}/>
                       </NavLink>

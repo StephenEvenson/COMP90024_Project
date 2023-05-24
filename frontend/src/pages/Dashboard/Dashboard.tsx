@@ -11,6 +11,7 @@ import TableOne from '../../components/TableOne';
 import MapHover from "../../components/maps/mapHover";
 // import useData from "../../hooks/useData";
 import MessageBox from "../../components/MessageBox/MessageBox";
+import CardTotalMastodon from "../../components/CardTotalMastodon";
 
 
 const HomelessPage = () => {
@@ -23,11 +24,17 @@ const HomelessPage = () => {
         {/*<CardOne/>*/}
         {/* # Homeless topics */}
         <div className='col-span-2'>
-          <MessageBox max_num={30} server={'.au'}  />
+          <MessageBox max_num={30} server={'.au'} />
+        </div>
+        <div className='col-span-2'>
+          <MessageBox max_num={30} server={'.ai'}  />
+        </div>
+        <div className='col-span-2'>
+          <MessageBox max_num={30} server={'.social'}  />
         </div>
         {/*<CardTwo/>*/}
         <CardTotalTweets/>
-        <CardFour/>
+        <CardTotalMastodon/>
       </div>
 
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
