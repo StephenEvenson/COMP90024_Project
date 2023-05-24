@@ -12,7 +12,7 @@ ENV PYTHONUNBUFFERED 1
 RUN apt-get update \
     && apt-get -y install gcc libffi-dev  \
     && pip install --upgrade pip  \
-    && pip install -r backend/nlp/requirements.txt \
+    && pip install -r requirements.txt \
     && chmod +x backend_start.sh  \
     && chmod +x wait-for-it.sh
 
