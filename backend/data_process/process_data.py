@@ -33,8 +33,8 @@ db_name = args.db_name
 server_url = args.server_url
 couch_api = CouchAPI(server_url, username='admin', password='admin')
 
-nlp_host = '127.0.0.1'
-nlp_port = 8000
+nlp_host = '192.168.0.80'
+nlp_port = 8003
 
 if rank == 0:
     try:

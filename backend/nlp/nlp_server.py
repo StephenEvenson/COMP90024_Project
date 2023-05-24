@@ -1,5 +1,5 @@
 import numpy as np
-from fastapi import FastAPI, BackgroundTasks
+from fastapi import FastAPI
 from pydantic import BaseModel
 
 from backend.nlp import compute_cross_score, compute_embedding, get_abusive_score, get_sentiment_score, \

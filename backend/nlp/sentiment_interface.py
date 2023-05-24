@@ -1,7 +1,10 @@
+import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
 sentiment_model_name = 'cardiffnlp/twitter-roberta-base-sentiment'
-sentiment_model = AutoModelForSequenceClassification.from_pretrained(sentiment_model_name)
+sentiment_model = AutoModelForSequenceClassification.from_pretrained(sentiment_model_name, device=device)
 sentiment_tokenizer = AutoTokenizer.from_pretrained(sentiment_model_name)
 
 
@@ -13,7 +16,7 @@ def get_sentiment_score(text: str) -> float:
 
 
 def get_sentiment_scores(texts: list[str]) -> list[float]:
-    inputs = sentiment_tokenizer(texts, return_tensors="pt", padding=True, truncation=True, max_length=512)
+    inputs = sentiment_tokenizer(texts, return_tensors="pt", padding=True, truncation=True, max_length=256)
     outputs = sentiment_model(**inputs)
     probs = outputs.logits.softmax(dim=1).detach()
     return probs[:, 2].tolist()

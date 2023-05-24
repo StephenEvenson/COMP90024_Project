@@ -58,8 +58,9 @@ def get_cross_encoder_model(model_name_or_path='cross-encoder/ms-marco-MiniLM-L-
     return model
 
 
-cross_model = get_cross_encoder_model()
-retrieve_model = get_retrieve_model()
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+cross_model = get_cross_encoder_model(device=device)
+retrieve_model = get_retrieve_model(device=device)
 
 
 def compute_embedding(text: str) -> np.ndarray | torch.Tensor:
