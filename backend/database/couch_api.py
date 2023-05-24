@@ -115,7 +115,7 @@ class DatabaseService:
         db = self.couch_api[db_name]
         db.create_views(db_name)
 
-    def get_mastodon_new_data(self, db_name, source, seconds):
+    def get_mastodon_new(self, db_name, source, seconds):
         now = datetime.now(pytz.utc)
         cutoff = now - timedelta(seconds=seconds)
 
@@ -150,7 +150,7 @@ class DatabaseService:
         else:
             return docs
 
-    def get_mastodon_sentiment_data(self, db_name, seconds):
+    def get_mastodon_sentiment(self, db_name, seconds):
         now = datetime.now(pytz.utc)
         start_time = now - timedelta(seconds=seconds)
 

@@ -5,13 +5,20 @@ from database.couch_api import DatabaseService
 
 app = FastAPI()
 
-read_db_host = os.environ.get('READ_DB_HOST')
-read_db_port = os.environ.get('READ_DB_PORT')
-write_db_port = os.environ.get('WRITE_DB_PORT')
-write_db_host = os.environ.get('WRITE_DB_HOST')
+# read_db_host = os.environ.get('READ_DB_HOST')
+# read_db_port = os.environ.get('READ_DB_PORT')
+# write_db_port = os.environ.get('WRITE_DB_PORT')
+# write_db_host = os.environ.get('WRITE_DB_HOST')
 
-read_db_service = DatabaseService(server_url=f'http://{read_db_host}:{read_db_port}/', username='admin', password='admin')
-write_db_service = DatabaseService(server_url=f'http://{write_db_host}:{write_db_port}/', username='admin', password='admin')
+read_db_host = '192.168.0.80'
+read_db_port = '5984'
+write_db_port = '192.168.0.80'
+write_db_host = '5984'
+
+read_db_service = DatabaseService(server_url=f'http://{read_db_host}:{read_db_port}/', username='admin',
+                                  password='admin')
+write_db_service = DatabaseService(server_url=f'http://{write_db_host}:{write_db_port}/', username='admin',
+                                   password='admin')
 
 
 @app.get("/")
@@ -31,16 +38,21 @@ async def create_views(db_name: str):
 
 
 @app.get("/api/mastodon/new/{source}/{seconds}")
-async def get_new_mastodon_data(source: str, seconds: int):
-    docs = read_db_service.get_mastodon_new_data('mastodon', source, seconds)
+async def get_new_mastodon(source: str, seconds: int):
+    docs = read_db_service.get_mastodon_new('mastodon', source, seconds)
     return {"message": "new mastodon data", "docs": docs}
 
 
 @app.get("/api/mastodon/sentiment/{seconds}")
-async def get_mastodon_sentiment_data(seconds: int):
-    docs = read_db_service.get_mastodon_sentiment_data('mastodon', seconds)
+async def get_mastodon_sentiment(seconds: int):
+    docs = read_db_service.get_mastodon_sentiment('mastodon', seconds)
     return {"message": "mastodon sentiment", "docs": docs}
 
+
+# @app.get("/api/mastodon/count/{scenario}/{seconds}")
+# async def get_mastodon_source_count(source: str, seconds: int):
+#     docs = read_db_service.get_mastodon_scenario_count('mastodon', scenario, seconds)
+#     return {"message": "mastodon scenario count", "docs": docs}
 
 @app.get("/api/sudo/regional_language")
 async def get_sudo_regional_language():
@@ -79,11 +91,11 @@ async def init_sudo():
 
 
 @app.get("/api/twitter/count/{scenario}")
-async def init_twitter(scenario: str):
+async def get_twitter_scenario_count(scenario: str):
     # scenario = 'all' | 'homeless' | 'language' | 'abuse'
     if scenario == 'all':
         return {
-            "message": "tweets number counted",
+            "message": "tweets scenario count",
             "count": {
                 "all": 378927,
                 "homeless": 5682,
@@ -92,10 +104,10 @@ async def init_twitter(scenario: str):
             }
         }
     if scenario == 'homeless':
-        return {"message": "tweets number counted", "count": 5682}
+        return {"message": "tweets scenario count", "count": 5682}
     if scenario == 'language':
-        return {"message": "tweets number counted", "count": 8551}
+        return {"message": "tweets scenario count", "count": 8551}
     if scenario == 'abuse':
-        return {"message": "tweets number counted", "count": 23694}
+        return {"message": "tweets scenario count", "count": 23694}
 
 # run with `uvicorn main:app --reload`
