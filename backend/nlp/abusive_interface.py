@@ -4,7 +4,8 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 abusive_model_name = 'Dabid/abusive-tagalog-profanity-detection'
-abusive_model = AutoModelForSequenceClassification.from_pretrained(abusive_model_name, device=device)
+abusive_model = AutoModelForSequenceClassification.from_pretrained(abusive_model_name)
+abusive_model.to(device)
 abusive_tokenizer = AutoTokenizer.from_pretrained(abusive_model_name)
 
 

@@ -4,7 +4,8 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 sentiment_model_name = 'cardiffnlp/twitter-roberta-base-sentiment'
-sentiment_model = AutoModelForSequenceClassification.from_pretrained(sentiment_model_name, device=device)
+sentiment_model = AutoModelForSequenceClassification.from_pretrained(sentiment_model_name)
+sentiment_model.to(device)
 sentiment_tokenizer = AutoTokenizer.from_pretrained(sentiment_model_name)
 
 
