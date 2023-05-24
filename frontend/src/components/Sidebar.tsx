@@ -93,7 +93,10 @@ const Sidebar = ({sidebarOpen, setSidebarOpen}: SidebarProps) => {
       <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
         <NavLink to="/" className='flex items-center space-x-2'>
           <img src="/np_logo.png" alt="Logo" className='h-8'/>
-          <div className="font-bold text-gray-2 text-xl">Team Null Pointer</div>
+          <div className='pt-4'>
+            <div className="font-bold text-gray-2 text-xl">Team Null Pointer</div>
+            <div>Group 72</div>
+          </div>
         </NavLink>
 
         <button
