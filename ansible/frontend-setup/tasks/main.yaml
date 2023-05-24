@@ -19,6 +19,12 @@
     name: frontend
     state: absent
 
+- name: Generate nginx.conf
+  template:
+    src: nginx.conf.j2
+    dest: /home/ubuntu/nginx.conf
+  become: yes
+
 # Create new Docker container and start container
 - name: Create and start Docker container
   become: yes
@@ -30,3 +36,5 @@
     recreate: true
     published_ports:
       - '80:80'
+    volumes:
+      - "/home/ubuntu/nginx.conf:/etc/nginx/conf.d/default.conf"
