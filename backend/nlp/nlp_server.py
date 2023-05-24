@@ -70,6 +70,11 @@ async def get_s_score(req: ScoreReq):
     return ScoreRes(score=score)
 
 
+@app.post("/get_embedding")
+async def get_embedding(req: ScoreReq):
+    embedding = compute_embedding(req.query)
+    return ScoreRes(score=embedding)
+
 @app.post("/update_embedding")
 async def update_embedding(req: UpdateEmbeddingReq):
     new_embedding = compute_embedding(req.query)

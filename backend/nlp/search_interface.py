@@ -63,8 +63,11 @@ cross_model = get_cross_encoder_model(device=device)
 retrieve_model = get_retrieve_model(device=device)
 
 
-def compute_embedding(text: str) -> np.ndarray | torch.Tensor:
-    return retrieve_model.encode([text], convert_to_tensor=True, show_progress_bar=False)
+def compute_embedding(text: str | [str]) -> np.ndarray | torch.Tensor:
+    if isinstance(text, list):
+        return retrieve_model.encode(text, convert_to_tensor=True, show_progress_bar=False)[0].tolist()
+    else:
+        return retrieve_model.encode([text], convert_to_tensor=True, show_progress_bar=False).tolist()
 
 
 def compute_cross_score(query: str, doc: str) -> float:
