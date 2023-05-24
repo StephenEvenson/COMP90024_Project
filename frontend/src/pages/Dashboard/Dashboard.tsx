@@ -1,13 +1,13 @@
 import DefaultLayout from '../../components/layout/DefaultLayout';
-import CardFour from '../../components/CardFour';
-import CardOne from '../../components/CardOne';
+// import CardFour from '../../components/CardFour';
+// import CardOne from '../../components/CardOne';
 import CardTotalTweets from '../../components/CardTotalTweets';
-import CardTwo from '../../components/CardTwo';
+// import CardTwo from '../../components/CardTwo';
 import ChartOne from '../../components/ChartOne';
 import ChartThree from '../../components/ChartThree';
 import ChartTwo from '../../components/ChartTwo';
-import TeamCard from '../../components/TeamCard';
-import TableOne from '../../components/TableOne';
+// import TeamCard from '../../components/TeamCard';
+// import TableOne from '../../components/TableOne';
 import MapHover from "../../components/maps/mapHover";
 // import useData from "../../hooks/useData";
 import MessageBox from "../../components/MessageBox/MessageBox";
@@ -43,11 +43,11 @@ const HomelessPage = () => {
         <ChartThree/>
         <ChartOne/>
 
-        {/*<MapOne />*/}
-        <div className="col-span-12 xl:col-span-8">
-          <TableOne/>
-        </div>
-        <TeamCard/>
+        {/*/!*<MapOne />*!/*/}
+        {/*<div className="col-span-12 xl:col-span-8">*/}
+        {/*  <TableOne/>*/}
+        {/*</div>*/}
+        {/*<TeamCard/>*/}
       </div>
     </DefaultLayout>
   );
