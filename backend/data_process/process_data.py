@@ -8,7 +8,9 @@ import requests
 
 from tqdm import tqdm
 from mpi4py import MPI
+import pandas as pd
 
+from backend.data_process.sal_api import SALAPI
 from backend.database.couch_api import CouchAPI
 from backend.data_process.phn_api import PHNAPI
 
@@ -20,17 +22,25 @@ rank = comm.Get_rank()
 world_size = comm.Get_size()
 
 argparser = argparse.ArgumentParser()
+argparser.add_argument('--twitter_json_path', type=str, default='backend/data/twitter-huge.json')
+argparser.add_argument('--sal_json_file', type=str, default='backend/data/sal.json')
+argparser.add_argument('--sa4_file', type=str, default='backend/data/sa4.csv')
 argparser.add_argument('--twitter_json_path', type=str,
                        default='backend/twitter-huge.json/mnt/ext100/twitter-huge.json')
 argparser.add_argument('--phn_memory_file', type=str, default='backend/data_process/phn_memory.json')
-argparser.add_argument('--db_name', type=str, default='raw_tweets_processed_3')
+argparser.add_argument('--db_name', type=str, default='target_tweets')
 argparser.add_argument('--server_url', type=str, default='http://192.168.0.80:5984/')
 argparser.add_argument('--batch_size', type=int, default=1_000)
 args = argparser.parse_args()
 
+twitter_json_path = args.twitter_json_path
+sal_json_file = args.sal_json_file
+sa4_file = args.sa4_file
 phn_memory_file = args.phn_memory_file
 db_name = args.db_name
 server_url = args.server_url
+batch_size = args.batch_size
+
 couch_api = CouchAPI(server_url, username='admin', password='admin')
 
 nlp_host = '127.0.0.1'
@@ -65,27 +75,60 @@ def get_json_line(byte_text: bytes):
 
 
 phn_api = PHNAPI(phn_memory_file)
+sal_api = SALAPI(sal_json_file)
+df = pd.read_csv(sa4_file)
+
+
+def nlp_req(query, doc=None, path='/get_abusive_score'):
+    req_data = {'query': query}
+    if doc is not None:
+        req_data = {'query': query, 'doc': doc}
+    req_url = f'http://192.168.0.80:8002' + path
+    response = requests.post(req_url, json=req_data, headers={
+        'Content-Type': 'application/json'
+    })
+    return float(json.loads(response.text).get('score'))
 
 
 def handle_tweet(item):
     try:
-        if item['doc']['data']['sentiment'] == 0:
-            return None
-
         bbox = item['doc']['includes']['places'][0]['geo']['bbox']
         phn = phn_api.get_phn_by_bbox(bbox)
         if phn is None:
             return None
 
+        full_name = item['doc']['includes']['places'][0]['full_name']
+        name = full_name.split(',')[0].strip().lower()
+        gcc = sal_api.get_gcc_by_name(name)
+        if gcc is None:
+            return None
+
+        df['SA4_NAME_2016'] = df['SA4_NAME_2016'].str.lower()
+        df_filtered = df[df['SA4_NAME_2016'] == name]['SA4_CODE_2016']
+        sa4_code = df_filtered.values[0] if not df_filtered.empty else None
+        # if sa4_code is None:
+        #     return None
+
+        readable_string = item['doc']['data']['text']
+
+        abusive_score = nlp_req(readable_string)
+        homeless_relative_score = nlp_req('homeless', readable_string, path='/get_score')
+        sentiment_score = nlp_req(readable_string, path='/get_sentiment_score')
+
         tweet = {
             '_id': item['id'],
             'author_id': item['doc']['data']['author_id'],
             'created_at': item['doc']['data']['created_at'],
-            'geo': phn,
+            'geo_gcc': str(gcc),
+            'geo_sa4': str(sa4_code),
+            'geo_phn': str(phn),
             'lang': item['doc']['data']['lang'],
-            'sentiment': item['doc']['data']['sentiment'],
+            # 'sentiment': item['doc']['data']['sentiment'],
             'tokens': item['value']['tokens'],
             'text': item['doc']['data']['text'],
+            'abusive_score': abusive_score,
+            'homeless_relative_score': homeless_relative_score,
+            'sentiment_score': sentiment_score,
         }
         return tweet
     except (AttributeError, KeyError, TypeError):
@@ -192,7 +235,7 @@ def process(twitter_json_path='data/twitter-huge.json', batch_size=1_000):
 
 
 def main():
-    process(args.twitter_json_path, args.batch_size)
+    process(twitter_json_path, batch_size)
 
 
 if __name__ == '__main__':
