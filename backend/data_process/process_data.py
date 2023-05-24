@@ -25,8 +25,6 @@ argparser = argparse.ArgumentParser()
 argparser.add_argument('--twitter_json_path', type=str, default='backend/data/twitter-huge.json')
 argparser.add_argument('--sal_json_file', type=str, default='backend/data/sal.json')
 argparser.add_argument('--sa4_file', type=str, default='backend/data/sa4.csv')
-argparser.add_argument('--twitter_json_path', type=str,
-                       default='backend/twitter-huge.json/mnt/ext100/twitter-huge.json')
 argparser.add_argument('--phn_memory_file', type=str, default='backend/data_process/phn_memory.json')
 argparser.add_argument('--db_name', type=str, default='target_tweets')
 argparser.add_argument('--server_url', type=str, default='http://192.168.0.80:5984/')

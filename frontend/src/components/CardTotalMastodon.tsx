@@ -16,12 +16,16 @@ const CardTotalTweets = () => {
       setData(number)
     }
     getData()
+    const interval = setInterval(() => {
+      getData()
+    }, 5000);
+    return () => clearInterval(interval);
   }, []);
   return (
     <div
-      className="rounded-sm border border-stroke bg-white py-4 px-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+      className="rounded-sm border border-stroke bg-white py-6 px-6 shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className='flex items-center space-x-4'>
-        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
+        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4 ">
           <BsMastodon className="text-xl fill-primary dark:fill-white"/>
         </div>
         <div className='text-2xl font-medium text-black-2 dark:text-white'>Mastodon</div>
@@ -29,7 +33,7 @@ const CardTotalTweets = () => {
 
       <div className="mt-4 flex items-end justify-between">
         <div className='flex flex-col w-full'>
-          <div className="flex justify-between  text-title-md font-bold text-black dark:text-white w-full ">
+          <div className="flex justify-between  text-title-md font-bold text-black dark:text-white w-full pb-2">
             <div>
               {data.all}
             </div>
@@ -45,19 +49,19 @@ const CardTotalTweets = () => {
               Homeless
             </div>
           </div>
-          <div className="flex justify-between text-title-sm font-bold text-black dark:text-white w-full">
-            <div>
-              {data!.language}
-            </div>
-            <div className="flex items-center gap-1 text-sm font-medium text-secondary">
-              Language
-            </div>
-          </div>
+          {/*<div className="flex justify-between text-title-sm font-bold text-black dark:text-white w-full">*/}
+          {/*  <div>*/}
+          {/*    {data!.language}*/}
+          {/*  </div>*/}
+          {/*  <div className="flex items-center gap-1 text-sm font-medium text-secondary">*/}
+          {/*    Language*/}
+          {/*  </div>*/}
+          {/*</div>*/}
           <div className="flex justify-between text-title-sm font-bold text-black dark:text-white w-full">
             <div>
               {data!.abuse}
             </div>
-            <div className="flex items-center gap-1 text-sm font-medium `text-meta-6`">
+            <div className="flex items-center gap-1 text-sm font-medium text-secondary">
               Vulgar words
             </div>
           </div>

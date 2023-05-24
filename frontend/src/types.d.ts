@@ -13,3 +13,9 @@ export interface TwitterCount {
   language: number,
   abuse: number
 }
+
+export interface Sa4SudoHomeless {
+  sa4_code16: string,
+  sa4_name16: string,
+  homeless_total: number,
+}

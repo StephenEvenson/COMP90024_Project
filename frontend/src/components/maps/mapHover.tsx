@@ -1,6 +1,8 @@
 import React, {useEffect} from "react";
 import {MapProvider, Map, useMap} from "react-map-gl";
-import MyComponent from "./MyComponent";
+// import MyComponent from "./MyComponent";
+// import Sa4Layer from "./Sa4Layer";
+import SaLayer from "./SaLayer";
 
 
 const MapHover: React.FC = () => {
@@ -21,7 +23,7 @@ const MapHover: React.FC = () => {
             mapStyle='mapbox://styles/mapbox/streets-v12'
             mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
           >
-            <MyComponent/>
+            <SaLayer/>
           </Map>
         </div>
       </div>

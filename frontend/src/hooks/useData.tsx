@@ -23,7 +23,7 @@ export default function useData(initialUrl: string, initialData: unknown): [{
       setIsLoading(true);
       try {
         const result = await axios(url);
-        console.log(result.data);
+        // console.log(result.data);
         setData(result.data);
       } catch (error) {
         setIsError(true);

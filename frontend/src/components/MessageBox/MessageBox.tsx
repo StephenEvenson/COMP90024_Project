@@ -7,27 +7,28 @@ import {MessageItem} from "../../types";
 function List(props: {
   items: MessageItem [];
   removeItem: (index: number) => void;
+  server: string;
 }) {
   const {items, removeItem} = props;
-
   return (
     <FlipMove>
       {items.map((item, index) => (
         <div
           className='w-full rounded odd:bg-gray dark:bg-boxdark dark:text-body dark:odd:text-meta-2'
-          key={item.id + index}
+          key={`${props.server}_${item.id}_${index}`}
           onClick={() => removeItem(index)}
         >
           <div
-            className='space-x-1 flex items-center justify-start px-2 py-0.5 text-sm whitespace-nowrap overflow-hidden overflow-ellipsis'>
+            className='space-x-1 flex items-center justify-start px-2 py-0.5 text-sm'>
             <div>
               {item.sentiment_score > 0.6 ? '😊' : item.sentiment_score < 0.4 ? '😔' : '😐'}
             </div>
             <div>
               {item.homeless_relative_score > 0 ? '🏠' : ''}
             </div>
-            <div className={(item.abusive_score > 0.8 ? 'text-danger' : '')}>
-              {item.content}
+            <div
+              className={'whitespace-nowrap overflow-hidden overflow-ellipsis ' + (item.abusive_score > 0.75 ? 'text-danger' : '')}>
+              {item.abusive_score > 0.75 ? `#Vulgar#: ${item.abusive_score.toFixed(1)}` : ''} {item.content}
             </div>
           </div>
         </div>
@@ -36,8 +37,15 @@ function List(props: {
   );
 }
 
-function RealTimeScrollingComponent(props: { max_num: number, server?: string }) {
-  const {max_num, server} = props;
+function RealTimeScrollingComponent(props: {
+  max_num?: number,
+  server?: string,
+  interval?: number,
+  className?: string
+}) {
+  const interval = props.interval || 5000;
+  const max_num = props.max_num || 10;
+  const server = props.server || '.au';
   const [items, setItems] = useState([] as MessageItem[]);
 
   const handleRemoveItem = (index: number) => {
@@ -50,18 +58,16 @@ function RealTimeScrollingComponent(props: { max_num: number, server?: string })
 
   useEffect(() => {
     // fetch data from server every 3 seconds and update the state
-    const interval = 3;
     const initData = async () => {
-      const mess = await getMastodonLatest(300,server) as MessageItem[];
-
+      const mess = await getMastodonLatest(300, server) as MessageItem[];
       setItems([...mess].slice(mess.length - max_num, mess.length));
     }
     initData()
 
     const intervalId = setInterval(async () => {
-      const mess = await getMastodonLatest(interval, server) as MessageItem[];
+      const mess = await getMastodonLatest(interval / 1000, server) as MessageItem[];
       setItems(prevMessages => [...prevMessages, ...mess]);
-    }, interval * 1000);
+    }, interval);
     return () => clearInterval(intervalId);
   }, []);
 
@@ -82,8 +88,8 @@ function RealTimeScrollingComponent(props: { max_num: number, server?: string })
           {server ? `(${server})` : undefined}:
         </div>
       </div>
-      <div className='overflow-hidden h-55 px-2 space-y-0.5 xl:h-30'>
-        <List items={items} removeItem={handleRemoveItem}></List>
+      <div className={'overflow-hidden h-55 px-2 space-y-0.5 xl:h-30 ' + props.className}>
+        <List items={items} removeItem={handleRemoveItem} server={server}/>
       </div>
     </div>
   )
