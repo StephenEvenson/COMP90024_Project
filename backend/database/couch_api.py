@@ -1,5 +1,4 @@
 import csv
-import math
 import os
 
 import couchdb
@@ -115,42 +114,27 @@ class DatabaseService:
         db = self.couch_api[db_name]
         db.create_views(db_name)
 
-    def get_mastodon_new_data(self, db_name, source, seconds):
+    def init_mastodon(self):
+        self.create_views('mastodon')
+
+    def get_mastodon_new(self, db_name, source_map, seconds):
         now = datetime.now(pytz.utc)
         cutoff = now - timedelta(seconds=seconds)
 
         db = self.couch_api[db_name]
 
-        # source = https://aus.social | https://mastodon.au | https://tictoc.social
-        rows = db.view('_design/by_created_at/_view/by_created_at',
-                       startkey=cutoff.isoformat(),
-                       endkey=now.isoformat(),
+        rows = db.view('_design/by_created_at_and_source/_view/by_created_at_and_source',
+                       startkey=[cutoff.isoformat(), source_map],
+                       endkey=[now.isoformat(), source_map],
                        include_docs=True)
 
         docs = []
-        docs_aus_social = []
-        docs_mastodon_au = []
-        docs_tictoc_social = []
-
         for row in rows:
-            if row.doc['source'] == 'https://aus.social':
-                docs_aus_social.append(row.doc)
-            elif row.doc['source'] == 'https://mastodon.au':
-                docs_mastodon_au.append(row.doc)
-            elif row.doc['source'] == 'https://tictoc.social':
-                docs_tictoc_social.append(row.doc)
             docs.append(row.doc)
 
-        if source == '.social':
-            return docs_aus_social
-        elif source == '.au':
-            return docs_mastodon_au
-        elif source == '.tictoc':
-            return docs_tictoc_social
-        else:
-            return docs
+        return docs
 
-    def get_mastodon_sentiment_data(self, db_name, seconds):
+    def get_mastodon_sentiment(self, db_name, seconds):
         now = datetime.now(pytz.utc)
         start_time = now - timedelta(seconds=seconds)
 
@@ -174,6 +158,69 @@ class DatabaseService:
             })
 
         return data
+
+    def get_mastodon_scenario_count(self, db_name, scenario):
+        db = self.couch_api[db_name]
+        scenario_view_map = {
+            'all': [
+                '_design/total_docs/_view/total_docs',
+                '_design/positive_homeless_scores/_view/positive_homeless_scores',
+                '_design/high_abusive_scores/_view/high_abusive_scores',
+            ],
+            'homeless': ['_design/positive_homeless_scores/_view/positive_homeless_scores'],
+            'abuse': ['_design/high_abusive_scores/_view/high_abusive_scores'],
+        }
+
+        if scenario not in scenario_view_map:
+            raise ValueError("Scenario must be 'all', 'homeless', or 'abuse'")
+
+        # prepare counts dictionary
+        counts = {
+            'total': 0,
+            'positive_homeless_scores': 0,
+            'high_abusive_scores': 0,
+        }
+
+        for view_name in scenario_view_map[scenario]:
+            # Query the appropriate view based on the scenario
+            rows = db.view(view_name)
+            count = 0
+            for row in rows:
+                # The value of each row is the count from the reduce function
+                count += row.value
+
+            # assign count to the appropriate key in the counts dictionary
+            if view_name == '_design/total_docs/_view/total_docs':
+                counts['total'] = count
+            elif view_name == '_design/positive_homeless_scores/_view/positive_homeless_scores':
+                counts['positive_homeless_scores'] = count
+            elif view_name == '_design/high_abusive_scores/_view/high_abusive_scores':
+                counts['high_abusive_scores'] = count
+
+        return counts
+
+    def get_mastodon_lang_count(self, db_name, seconds):
+        now = datetime.now(pytz.utc)
+        cutoff = now - timedelta(seconds=seconds)
+
+        db = self.couch_api[db_name]
+
+        rows = db.view('_design/by_created_at/_view/by_created_at',
+                       startkey=cutoff.isoformat(),
+                       endkey=now.isoformat(),
+                       include_docs=True)
+
+        langs = {}
+        for row in rows:
+            lang = row.doc['language']
+            if not lang:
+                continue
+            lang = lang.split('-')[0]
+            if lang not in langs:
+                langs[lang] = 0
+            langs[lang] += 1
+
+        return langs
 
     def init_sudo(self):
         path_to_csvs = 'data/sudo/'

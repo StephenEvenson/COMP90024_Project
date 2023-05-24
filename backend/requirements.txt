@@ -13,5 +13,6 @@ typing_extensions
 uvicorn
 CouchDB
 tqdm
-mpi4py
 mastodon.py
+numpy
+pandas

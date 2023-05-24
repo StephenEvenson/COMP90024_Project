@@ -28,3 +28,29 @@
       WRITE_DB_PORT: "{{ ports.couchdb }}"
       READ_DB_HOST: "{{ groups['ServerNodes'][0] }}"
       READ_DB_PORT: "{{ ports.couchdb }}"
+
+- name: Wait for backend to start
+  uri:
+    url: "http://{{ groups['ServerNodes'][0] }}:{{ ports.backend }}/hello/hi"
+    method: GET
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 10
+  delay: 5
+  become: yes
+
+- name: Init mastodon database
+  ansible.builtin.command:
+    cmd: "curl -X GET http://{{ groups['ServerNodes'][0] }}:{{ ports.backend }}/api/mastodon/init"
+  become: yes
+
+- name: Init sudo database
+  ansible.builtin.command:
+    cmd: "curl -X GET http://{{ groups['ServerNodes'][0] }}:{{ ports.backend }}/api/sudo/init"
+  become: yes
+
+- name: Init twitter database
+  ansible.builtin.command:
+    cmd: "curl -X GET http://{{ groups['ServerNodes'][0] }}:{{ ports.backend }}/api/twitter/init"
+  become: yes
