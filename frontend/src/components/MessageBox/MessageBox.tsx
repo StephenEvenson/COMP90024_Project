@@ -52,14 +52,14 @@ function RealTimeScrollingComponent(props: { max_num: number, server?: string })
     // fetch data from server every 3 seconds and update the state
     const interval = 3;
     const initData = async () => {
-      const mess = await getMastodonLatest(300) as MessageItem[];
+      const mess = await getMastodonLatest(300,server) as MessageItem[];
 
       setItems([...mess].slice(mess.length - max_num, mess.length));
     }
     initData()
 
     const intervalId = setInterval(async () => {
-      const mess = await getMastodonLatest(interval) as MessageItem[];
+      const mess = await getMastodonLatest(interval, server) as MessageItem[];
       setItems(prevMessages => [...prevMessages, ...mess]);
     }, interval * 1000);
     return () => clearInterval(intervalId);

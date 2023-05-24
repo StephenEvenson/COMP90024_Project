@@ -27,7 +27,7 @@ const HomelessPage = () => {
           <MessageBox max_num={30} server={'.au'} />
         </div>
         <div className='col-span-2'>
-          <MessageBox max_num={30} server={'.ai'}  />
+          <MessageBox max_num={30} server={'.tictoc'}  />
         </div>
         <div className='col-span-2'>
           <MessageBox max_num={30} server={'.social'}  />
