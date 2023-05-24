@@ -15,4 +15,3 @@ CouchDB
 tqdm
 mpi4py
 mastodon.py
-sentence-transformers
