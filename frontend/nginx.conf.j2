@@ -1,0 +1,26 @@
+server {
+    listen       80;
+    location  / {
+        root /usr/share/nginx/html/;
+        include /etc/nginx/mime.types;
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /api {
+        if ($request_method = 'OPTIONS') {
+            add_header Access-Control-Allow-Origin '{{ cors_origin }}';
+            add_header Access-Control-Allow-Headers '*';
+            add_header Access-Control-Allow-Methods '*';
+            add_header Access-Control-Allow-Credentials 'true';
+            return 204;
+        }
+
+        if ($request_method != 'OPTIONS') {
+            add_header Access-Control-Allow-Origin '{{ cors_origin }}' always;
+            add_header Access-Control-Allow-Credentials 'true';
+        }
+
+;         proxy_pass  http://101.188.82.212:58000;
+        proxy_pass  http://{{ backend_host }}:{{ backend_port }};
+    }
+}
