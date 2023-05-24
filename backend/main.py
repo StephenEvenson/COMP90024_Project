@@ -16,6 +16,7 @@ write_db_service = DatabaseService(server_url=f'http://{write_db_host}:{write_db
                                    password='admin')
 
 
+# common
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
@@ -32,6 +33,7 @@ async def create_views(db_name: str):
     return {"message": "views created"}
 
 
+# mastodon
 @app.get("/api/mastodon/init")
 async def init_mastodon():
     write_db_service.init_mastodon()
@@ -50,12 +52,20 @@ async def get_mastodon_sentiment(seconds: int):
     return {"message": "mastodon sentiment", "docs": docs}
 
 
-# @app.get("/api/mastodon/count/{scenario}/{seconds}")
-# async def get_mastodon_source_count(source: str, seconds: int):
-#     docs = read_db_service.get_mastodon_scenario_count('mastodon', scenario, seconds)
-#     return {"message": "mastodon scenario count", "docs": docs}
+@app.get("/api/mastodon/lang/{seconds}")
+async def get_mastodon_lang(seconds: int):
+    docs = read_db_service.get_mastodon_lang_count('mastodon', seconds)
+    return {"message": "mastodon lang", "docs": docs}
 
 
+@app.get("/api/mastodon/count/{scenario}")
+async def get_mastodon_scenario_count(scenario: str):
+    # scenario = 'all' | 'homeless' | 'abuse'
+    docs = read_db_service.get_mastodon_scenario_count('mastodon', scenario)
+    return {"message": "mastodon scenario count", "docs": docs}
+
+
+# sudo
 @app.get("/api/sudo/init")
 async def init_sudo():
     write_db_service.init_sudo()
@@ -92,6 +102,7 @@ async def get_sudo_sa4_income():
     return {"message": "sudo sa4 income", "docs": docs}
 
 
+# twitter
 @app.get("/api/twitter/init")
 async def init_mastodon():
     return {"message": "twitter initialized"}
@@ -116,5 +127,11 @@ async def get_twitter_scenario_count(scenario: str):
         return {"message": "tweets scenario count", "count": 8551}
     if scenario == 'abuse':
         return {"message": "tweets scenario count", "count": 23694}
+
+
+@app.get("/api/twitter/test")
+async def get_twitter_test():
+    docs = read_db_service.get_twitter_test('target_tweets')
+    return {"message": "twitter test", "docs": docs}
 
 # run with `uvicorn main:app --reload`
