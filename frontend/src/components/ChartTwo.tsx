@@ -115,7 +115,7 @@ const ChartTwo: React.FC = () => {
   const [selectedState, setSelectedState] = useState<StatePhn>(states[0]);
 
   useEffect(() => {
-    console.log(selectedState);
+    // console.log(selectedState);
   }, [selectedState]);
 
   return (

@@ -221,3 +221,7 @@ span.flatpickr-weekday,
     font-size: 20px;
     padding-right: 2px;
 }
+
+.custom-width {
+    width: calc(100% - 1rem);
+}

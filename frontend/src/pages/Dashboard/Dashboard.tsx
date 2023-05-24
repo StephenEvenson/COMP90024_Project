@@ -1,28 +1,40 @@
+import DefaultLayout from '../../components/layout/DefaultLayout';
 import CardFour from '../../components/CardFour';
 import CardOne from '../../components/CardOne';
-import CardThree from '../../components/CardThree';
+import CardTotalTweets from '../../components/CardTotalTweets';
 import CardTwo from '../../components/CardTwo';
 import ChartOne from '../../components/ChartOne';
 import ChartThree from '../../components/ChartThree';
 import ChartTwo from '../../components/ChartTwo';
-import ChatCard from '../../components/ChatCard';
-// import MapOne from '../../components/MapOne';
+import TeamCard from '../../components/TeamCard';
 import TableOne from '../../components/TableOne';
-import DefaultLayout from '../../layout/DefaultLayout';
-// import MapTest from "../../components/maps/mapTest";
 import MapHover from "../../components/maps/mapHover";
+// import useData from "../../hooks/useData";
+import MessageBox from "../../components/MessageBox/MessageBox";
+import CardTotalMastodon from "../../components/CardTotalMastodon";
 
-const ECommerce = () => {
+
+const HomelessPage = () => {
+  // const [{data, isLoading, isError}, setUrl] = useData('https://jsonplaceholder.typicode.com/users', []);
+  // console.log({data, isLoading, isError});
   return (
     <DefaultLayout>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-5 2xl:gap-7.5">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
         {/* # Homeless topics */}
-        <CardOne/>
-        <CardOne/>
+        {/*<CardOne/>*/}
         {/* # Homeless topics */}
-        <CardTwo/>
-        <CardThree/>
-        <CardFour/>
+        <div className='col-span-2'>
+          <MessageBox max_num={30} server={'.au'} />
+        </div>
+        <div className='col-span-2'>
+          <MessageBox max_num={30} server={'.tictoc'}  />
+        </div>
+        <div className='col-span-2'>
+          <MessageBox max_num={30} server={'.social'}  />
+        </div>
+        {/*<CardTwo/>*/}
+        <CardTotalTweets/>
+        <CardTotalMastodon/>
       </div>
 
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
@@ -35,10 +47,10 @@ const ECommerce = () => {
         <div className="col-span-12 xl:col-span-8">
           <TableOne/>
         </div>
-        <ChatCard/>
+        <TeamCard/>
       </div>
     </DefaultLayout>
   );
 };
 
-export default ECommerce;
+export default HomelessPage;

@@ -14,6 +14,8 @@ from backend.data_process.sal_api import SALAPI
 from backend.database.couch_api import CouchAPI
 from backend.data_process.phn_api import PHNAPI
 
+# from backend.nlp import get_abusive_scores, compute_cross_scores, get_sentiment_scores
+
 # MPI settings
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
@@ -23,6 +25,8 @@ argparser = argparse.ArgumentParser()
 argparser.add_argument('--twitter_json_path', type=str, default='backend/data/twitter-huge.json')
 argparser.add_argument('--sal_json_file', type=str, default='backend/data/sal.json')
 argparser.add_argument('--sa4_file', type=str, default='backend/data/sa4.csv')
+argparser.add_argument('--twitter_json_path', type=str,
+                       default='backend/twitter-huge.json/mnt/ext100/twitter-huge.json')
 argparser.add_argument('--phn_memory_file', type=str, default='backend/data_process/phn_memory.json')
 argparser.add_argument('--db_name', type=str, default='target_tweets')
 argparser.add_argument('--server_url', type=str, default='http://192.168.0.80:5984/')
@@ -38,6 +42,12 @@ server_url = args.server_url
 batch_size = args.batch_size
 
 couch_api = CouchAPI(server_url, username='admin', password='admin')
+
+nlp_host = '127.0.0.1'
+nlp_port = 8000
+
+# nlp_host = '192.168.0.80'
+# nlp_port = 8003
 
 if rank == 0:
     try:
@@ -125,7 +135,33 @@ def handle_tweet(item):
         return None
 
 
-def process(twitter_json_path, batch_size):
+def nlp_req(query, doc=None, path='/get_abusive_scores'):
+    req_data = {'query': query}
+    if doc is not None:
+        req_data = {'query': query, 'doc': doc}
+    req_url = f'http://{nlp_host}:{nlp_port}' + path
+    response = requests.post(req_url, json=req_data, headers={
+        'Content-Type': 'application/json'
+    })
+    if response.status_code != 200:
+        raise Exception(f'NLP request failed, status_code: {response.status_code}, text: {response.text}')
+
+    return json.loads(response.text).get('score')
+
+
+def process_scores(items):
+    texts = [item['text'] for item in items]
+    abusive_scores = nlp_req(texts, path='/get_abusive_score')
+    sentiment_scores = nlp_req(texts, path='/get_sentiment_score')
+    cross_scores = nlp_req('homeless', texts, path='/get_score')
+    for i, item in enumerate(items):
+        item['abusive_score'] = float(abusive_scores[i])
+        item['sentiment_score'] = float(sentiment_scores[i])
+        item['cross_score'] = float(cross_scores[i])
+    return items
+
+
+def process(twitter_json_path='data/twitter-huge.json', batch_size=1_000):
     start_time = time.time()
     file_size = get_file_size(twitter_json_path)
     block_size = int(file_size / world_size)
@@ -165,7 +201,8 @@ def process(twitter_json_path, batch_size):
         if new_tweet is not None:
             jsons.append(new_tweet)
             if len(jsons) >= batch_size:
-                db.save_batch(jsons)
+                processed = process_scores(jsons)
+                db.save_batch(processed)
                 jsons = []
 
         if rank == pbar_rank:
@@ -173,8 +210,8 @@ def process(twitter_json_path, batch_size):
 
         tell = new_tell
         line_count += 1
-
-    db.save_batch(jsons)
+    processed = process_scores(jsons)
+    db.save_batch(processed)
 
     if rank == pbar_rank:
         pbar.close()

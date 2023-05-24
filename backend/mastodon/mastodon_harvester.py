@@ -79,7 +79,8 @@ class Listener(StreamListener):
                 'homeless_relative_score': homeless_relative_score,
                 'sentiment_score': sentiment_score,
                 'created_at': json_single['created_at'],
-                'language': json_single['language']
+                'language': json_single['language'],
+                'source': api_url
             }
             db.save(new_store)
 
