@@ -1,8 +1,9 @@
 import numpy as np
-from fastapi import FastAPI, BackgroundTasks
+from fastapi import FastAPI
 from pydantic import BaseModel
 
-from backend.nlp import compute_cross_score, compute_embedding, get_abusive_score, get_sentiment_score
+from backend.nlp import compute_cross_score, compute_embedding, get_abusive_score, get_sentiment_score, \
+    compute_cross_scores, get_abusive_scores, get_sentiment_scores
 
 app = FastAPI()
 
@@ -18,19 +19,19 @@ all_embeddings = []
 
 class CrossScoreReq(BaseModel):
     query: str
-    doc: str
+    doc: str | list[str]
 
 
 class CrossScoreRes(BaseModel):
-    score: float
+    score: float | list[float]
 
 
 class ScoreReq(BaseModel):
-    query: str
+    query: str | list[str]
 
 
 class ScoreRes(BaseModel):
-    score: float
+    score: float | list[float]
 
 
 class UpdateEmbeddingReq(BaseModel):
@@ -44,19 +45,28 @@ class UpdateEmbeddingRes(BaseModel):
 
 @app.post("/get_score")
 async def get_score(req: CrossScoreReq):
-    score = compute_cross_score(req.query, req.doc)
+    if isinstance(req.doc, list):
+        score = compute_cross_scores(req.query, req.doc)
+    else:
+        score = compute_cross_score(req.query, req.doc)
     return CrossScoreRes(score=score)
 
 
 @app.post("/get_abusive_score")
 async def get_a_score(req: ScoreReq):
-    score = get_abusive_score(req.query)
+    if isinstance(req.query, list):
+        score = get_abusive_scores(req.query)
+    else:
+        score = get_abusive_score(req.query)
     return ScoreRes(score=score)
 
 
 @app.post("/get_sentiment_score")
 async def get_s_score(req: ScoreReq):
-    score = get_sentiment_score(req.query)
+    if isinstance(req.query, list):
+        score = get_sentiment_scores(req.query)
+    else:
+        score = get_sentiment_score(req.query)
     return ScoreRes(score=score)
 
 
