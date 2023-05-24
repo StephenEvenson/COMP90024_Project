@@ -115,6 +115,9 @@ class DatabaseService:
         db = self.couch_api[db_name]
         db.create_views(db_name)
 
+    def init_mastodon(self):
+        self.create_views('mastodon')
+
     def get_mastodon_new(self, db_name, source, seconds):
         now = datetime.now(pytz.utc)
         cutoff = now - timedelta(seconds=seconds)

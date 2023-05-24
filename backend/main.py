@@ -5,15 +5,10 @@ from database.couch_api import DatabaseService
 
 app = FastAPI()
 
-# read_db_host = os.environ.get('READ_DB_HOST')
-# read_db_port = os.environ.get('READ_DB_PORT')
-# write_db_port = os.environ.get('WRITE_DB_PORT')
-# write_db_host = os.environ.get('WRITE_DB_HOST')
-
-read_db_host = '192.168.0.80'
-read_db_port = '5984'
-write_db_port = '192.168.0.80'
-write_db_host = '5984'
+read_db_host = os.environ.get('READ_DB_HOST')
+read_db_port = os.environ.get('READ_DB_PORT')
+write_db_port = os.environ.get('WRITE_DB_PORT')
+write_db_host = os.environ.get('WRITE_DB_HOST')
 
 read_db_service = DatabaseService(server_url=f'http://{read_db_host}:{read_db_port}/', username='admin',
                                   password='admin')
@@ -37,6 +32,12 @@ async def create_views(db_name: str):
     return {"message": "views created"}
 
 
+@app.get("/api/mastodon/init")
+async def init_mastodon():
+    write_db_service.init_mastodon()
+    return {"message": "mastodon initialized"}
+
+
 @app.get("/api/mastodon/new/{source}/{seconds}")
 async def get_new_mastodon(source: str, seconds: int):
     docs = read_db_service.get_mastodon_new('mastodon', source, seconds)
@@ -53,6 +54,13 @@ async def get_mastodon_sentiment(seconds: int):
 # async def get_mastodon_source_count(source: str, seconds: int):
 #     docs = read_db_service.get_mastodon_scenario_count('mastodon', scenario, seconds)
 #     return {"message": "mastodon scenario count", "docs": docs}
+
+
+@app.get("/api/sudo/init")
+async def init_sudo():
+    write_db_service.init_sudo()
+    return {"message": "sudo initialized"}
+
 
 @app.get("/api/sudo/regional_language")
 async def get_sudo_regional_language():
@@ -84,10 +92,9 @@ async def get_sudo_sa4_income():
     return {"message": "sudo sa4 income", "docs": docs}
 
 
-@app.get("/api/sudo/init")
-async def init_sudo():
-    write_db_service.init_sudo()
-    return {"message": "sudo initialized"}
+@app.get("/api/twitter/init")
+async def init_mastodon():
+    return {"message": "twitter initialized"}
 
 
 @app.get("/api/twitter/count/{scenario}")

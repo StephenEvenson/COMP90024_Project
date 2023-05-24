@@ -14,3 +14,5 @@ uvicorn
 CouchDB
 tqdm
 mastodon.py
+numpy
+pandas
