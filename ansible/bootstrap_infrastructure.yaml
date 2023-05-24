@@ -51,4 +51,5 @@
   roles:
     - role: nlp-server-setup
     - role: mastodon-setup
+    - role: backend-setup
     - role: frontend-setup

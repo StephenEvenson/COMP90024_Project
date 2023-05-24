@@ -51,6 +51,13 @@
     name: nlp_server
     state: absent
 
+# Stop Docker container
+- name: Stop Docker container
+  become: yes
+  docker_container:
+    name: backend
+    state: absent
+
 # Create new Docker container for data analytics scripts and start container
 - name: Create and start Docker container
   become: yes

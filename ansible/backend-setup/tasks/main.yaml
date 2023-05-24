@@ -1,0 +1,30 @@
+# Build Docker image
+- name: Build an image and push it to local repo
+  docker_image:
+    build:
+      path: '~/COMP90024_Project/backend'
+      dockerfile: Backend.Dockerfile
+      pull: yes
+    name: backend
+    tag: latest
+    source: build
+    force_source: yes
+  become: yes
+  environment: "{{ proxy_env }}"
+
+# Create new Docker container for data analytics scripts and start container
+- name: Create and start Docker container
+  become: yes
+  docker_container:
+    name: backend
+    image: backend
+    state: started
+    pull: false
+    recreate: true
+    published_ports:
+      - "{{ ports.backend }}:8000"
+    env:
+      WRITE_DB_HOST: "{{ groups['MasterNode'][0] }}"
+      WRITE_DB_PORT: "{{ ports.couchdb }}"
+      READ_DB_HOST: "{{ groups['ServerNodes'][0] }}"
+      READ_DB_PORT: "{{ ports.couchdb }}"
