@@ -31,7 +31,7 @@ class ScoreReq(BaseModel):
 
 
 class ScoreRes(BaseModel):
-    score: float | list[float]
+    score: float | list[float] | list[list[float]]
 
 
 class UpdateEmbeddingReq(BaseModel):

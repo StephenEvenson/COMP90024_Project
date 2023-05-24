@@ -66,9 +66,10 @@ retrieve_model = get_retrieve_model(device=device)
 
 def compute_embedding(text: Union[str, list[str]]) -> Union[np.ndarray, torch.Tensor]:
     if isinstance(text, list):
-        return retrieve_model.encode(text, convert_to_tensor=True, show_progress_bar=False)[0].tolist()
+        return retrieve_model.encode(text, convert_to_numpy=True, show_progress_bar=False).tolist()
+
     else:
-        return retrieve_model.encode([text], convert_to_tensor=True, show_progress_bar=False).tolist()
+        return retrieve_model.encode([text], convert_to_numpy=True, show_progress_bar=False)[0].tolist()
 
 
 def compute_cross_score(query: str, doc: str) -> float:
