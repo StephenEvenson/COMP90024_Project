@@ -3,9 +3,13 @@ import {useEffect, useRef} from "react";
 import mapboxgl from "mapbox-gl";
 import ReactDOM from "react-dom/client"
 
-const Popup = () => (
-  <div className='p-2'>
-    <iframe width="210" height="150" src="https://www.youtube.com/embed/tgbNymZ7vqY"/>
+const Popup = (props:{
+  title?: string,
+  description?: string,
+}) => (
+  <div className='p-2 max-w-40 overflow-clip'>
+    <div className='text-lg font-bold'>{props.title || 'Title'}</div>
+    <div className='text-sm'>{props.description || 'Description'}</div>
   </div>
 )
 
@@ -120,7 +124,7 @@ export default function () {
     map.on('click', 'phn-fills', (e) => {
       const popupNode = document.createElement("div")
       const pop = ReactDOM.createRoot(popupNode)
-      pop.render(<Popup/>)
+      pop.render(<Popup title={'click'} description={e.lngLat.toString()}/>)
       popUpRef.current
         .setLngLat(e.lngLat)
         .setDOMContent(popupNode)
