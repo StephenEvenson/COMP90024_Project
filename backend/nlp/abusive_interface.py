@@ -13,7 +13,7 @@ def get_abusive_score(text: str) -> float:
 
 
 def get_abusive_scores(texts: list[str]) -> list[float]:
-    inputs = abusive_tokenizer(texts, return_tensors="pt", padding=True, truncation=True, max_length=512)
+    inputs = abusive_tokenizer(texts, return_tensors="pt", padding=True, truncation=True, max_length=256)
     outputs = abusive_model(**inputs)
     probs = outputs.logits.softmax(dim=1).detach()
     return probs[:, 1].tolist()

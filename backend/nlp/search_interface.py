@@ -71,6 +71,11 @@ def compute_cross_score(query: str, doc: str) -> float:
     return cross_model.predict(model_input, convert_to_numpy=True, show_progress_bar=False)[0]
 
 
+def compute_cross_scores(query: str, docs: [str]) -> float:
+    model_input = [[query, doc] for doc in docs]
+    return cross_model.predict(model_input, convert_to_numpy=True, show_progress_bar=False).tolist()
+
+
 def retrieve(
         model: SentenceTransformer,
         query: str,
