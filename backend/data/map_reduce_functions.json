@@ -1,0 +1,26 @@
+{
+  "mastodon": {
+    "by_created_at": {
+      "map": "function(doc) { var date = new Date(doc.created_at); if (date != \"Invalid Date\") emit(date, doc); }"
+    },
+    "by_created_at_and_sentiment_score": {
+      "map": "function(doc) { var date = new Date(doc.created_at); var bucket = null; if (doc.sentiment_score >= 0 && doc.sentiment_score < 0.4) bucket = '0-0.4'; else if (doc.sentiment_score >= 0.4 && doc.sentiment_score < 0.6) bucket = '0.4-0.6'; else if (doc.sentiment_score >= 0.6 && doc.sentiment_score < 0.8) bucket = '0.6-0.8'; else if (doc.sentiment_score >= 0.8 && doc.sentiment_score <= 1) bucket = '0.8-1'; if (date != 'Invalid Date' && bucket != null) emit([date.toISOString(), bucket], null); }",
+      "reduce": "_count"
+    }
+  },
+  "sudo_gcc_homeless": {
+    "by_gccsa_and_homeless_counts": {
+      "map": "function(doc) { if(doc[' gccsa_code'] && doc[' gccsa_name'] && doc.homeless_m_tot && doc.homeless_f_total && doc.homeless_total) emit([doc[' gccsa_code'], doc[' gccsa_name'], doc.homeless_m_tot, doc.homeless_f_total, doc.homeless_total], null); }"
+    }
+  },
+  "sudo_sa4_homeless": {
+    "by_sa4_and_homeless_counts": {
+      "map": "function(doc) { if(doc[' sa4_code16'] && doc[' sa4_name_2016'] && doc.homeless_total) emit([doc[' sa4_code16'], doc[' sa4_name_2016'], doc.homeless_total], null); }"
+    }
+  },
+  "sudo_sa4_income": {
+    "by_sa4_and_weekly_income": {
+      "map": "function(doc) { if(doc.sa4_code_2021 && doc[' median_tot_fam_inc_weekly'] && doc[' median_tot_prsnl_inc_weekly']) emit([doc.sa4_code_2021, doc[' median_tot_fam_inc_weekly'], doc[' median_tot_prsnl_inc_weekly']], null); }"
+    }
+  }
+}
