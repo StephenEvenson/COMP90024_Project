@@ -1,5 +1,6 @@
 import csv
 import os
+from collections import defaultdict
 
 import couchdb
 import json
@@ -117,22 +118,35 @@ class DatabaseService:
     def init_mastodon(self):
         self.create_views('mastodon')
 
-    def get_mastodon_new(self, db_name, source_map, seconds):
+    def get_mastodon_new(self, db_name, source, seconds):
         now = datetime.now(pytz.utc)
         cutoff = now - timedelta(seconds=seconds)
-
         db = self.couch_api[db_name]
-
-        rows = db.view('_design/by_created_at_and_source/_view/by_created_at_and_source',
-                       startkey=[cutoff.isoformat(), source_map],
-                       endkey=[now.isoformat(), source_map],
+        # source = https://aus.social | https://mastodon.au | https://tictoc.social
+        rows = db.view('_design/by_created_at/_view/by_created_at',
+                       startkey=cutoff.isoformat(),
+                       endkey=now.isoformat(),
                        include_docs=True)
-
         docs = []
+        docs_aus_social = []
+        docs_mastodon_au = []
+        docs_tictoc_social = []
         for row in rows:
+            if row.doc['source'] == 'https://aus.social':
+                docs_aus_social.append(row.doc)
+            elif row.doc['source'] == 'https://mastodon.au':
+                docs_mastodon_au.append(row.doc)
+            elif row.doc['source'] == 'https://tictoc.social':
+                docs_tictoc_social.append(row.doc)
             docs.append(row.doc)
-
-        return docs
+        if source == '.social':
+            return docs_aus_social
+        elif source == '.au':
+            return docs_mastodon_au
+        elif source == '.tictoc':
+            return docs_tictoc_social
+        else:
+            return docs
 
     def get_mastodon_sentiment(self, db_name, seconds):
         now = datetime.now(pytz.utc)
@@ -263,18 +277,6 @@ class DatabaseService:
 
         return docs
 
-    def get_sudo_regional_population(self, db_name):
-        db = self.couch_api[db_name]
-
-        rows = db.view('_all_docs', include_docs=True)
-
-        docs = []
-        for row in rows:
-            doc = row.doc
-            docs.append(doc)
-
-        return docs
-
     def get_sudo_gcc_homeless(self, db_name):
         db = self.couch_api[db_name]
 
@@ -299,17 +301,22 @@ class DatabaseService:
 
         rows = db.view('_design/by_sa4_and_homeless_counts/_view/by_sa4_and_homeless_counts')
 
-        docs = []
-        for row in rows:
-            sa4_code16, sa4_name_2016, homeless_total = row.key
-            doc = {
-                'sa4_code16': sa4_code16,
-                'sa4_name_2016': sa4_name_2016,
-                'homeless_total': homeless_total
-            }
-            docs.append(doc)
+        with open('data/2011sa4.geojson') as f:
+            geojson = json.load(f)
 
-        return docs
+        code_total_dict = {}
+        for row in rows:
+            sa4_code16, homeless_total = row.key
+            code_total_dict[str(sa4_code16)] = homeless_total
+
+        for feature in geojson['features']:
+            sa4_code = feature['properties']['SA4_CODE']
+            if str(sa4_code) in code_total_dict:
+                feature['properties']['homeless_total'] = code_total_dict[sa4_code]
+            else:
+                feature['properties']['homeless_total'] = 0
+
+        return geojson
 
     def get_sudo_sa4_income(self, db_name):
         db = self.couch_api[db_name]
@@ -327,3 +334,182 @@ class DatabaseService:
             docs.append(doc)
 
         return docs
+
+    def init_twitter(self):
+        self.create_views('twitter')
+
+    def get_twitter_scenario_count(self, db_name, scenario):
+        db = self.couch_api[db_name]
+        scenario_view_map = {
+            'all': [
+                '_design/total_docs/_view/total_docs',
+                '_design/by_homeless_related/_view/by_homeless_related',
+            ],
+            'homeless': ['_design/by_homeless_related/_view/by_homeless_related'],
+        }
+
+        if scenario not in scenario_view_map:
+            raise ValueError("Scenario must be 'all' or 'homeless'")
+
+        # prepare counts dictionary
+        counts = {
+            'all': 0,
+            'homeless': 0,
+        }
+
+        for view_name in scenario_view_map[scenario]:
+            # Query the appropriate view based on the scenario
+            rows = db.view(view_name)
+            count = 0
+            for row in rows:
+                # The value of each row is the count from the reduce function
+                count += row.value
+
+            # assign count to the appropriate key in the counts dictionary
+            if view_name == '_design/total_docs/_view/total_docs':
+                counts['all'] = count
+            elif view_name == '_design/by_homeless_related/_view/by_homeless_related':
+                counts['homeless'] = count
+
+        return counts
+
+    def get_twitter_homeless_related_distribution(self, db_name, gcc):
+        db = self.couch_api[db_name]
+
+        views = [
+            '_design/by_homeless_job_city/_view/by_homeless_job_city',
+            '_design/by_homeless_eco_city/_view/by_homeless_eco_city',
+            '_design/by_homeless_men_city/_view/by_homeless_men_city',
+            '_design/by_homeless_soc_city/_view/by_homeless_soc_city',
+            '_design/by_homeless_edu_city/_view/by_homeless_edu_city',
+        ]
+
+        counts = {}
+
+        for view_name in views:
+            if gcc == 'all':
+                rows = db.view(view_name)
+            else:
+                rows = db.view(view_name, key=gcc)
+            rows = list(rows)
+            if rows:  # Check if the list is not empty
+                if view_name == '_design/by_homeless_job_city/_view/by_homeless_job_city':
+                    counts['job'] = rows[0].value
+                elif view_name == '_design/by_homeless_eco_city/_view/by_homeless_eco_city':
+                    counts['eco'] = rows[0].value
+                elif view_name == '_design/by_homeless_men_city/_view/by_homeless_men_city':
+                    counts['men'] = rows[0].value
+                elif view_name == '_design/by_homeless_soc_city/_view/by_homeless_soc_city':
+                    counts['soc'] = rows[0].value
+                elif view_name == '_design/by_homeless_edu_city/_view/by_homeless_edu_city':
+                    counts['edu'] = rows[0].value
+
+        return counts
+
+    def get_twitter_homeless_related_heat(self, db_name):
+        db = self.couch_api[db_name]
+
+        rows = db.view('_design/by_homeless_tweet_heat/_view/by_homeless_tweet_heat')
+
+        with open('data/2011sa4.geojson') as f:
+            geojson = json.load(f)
+
+        code_heat_dict = {}
+        for row in rows:
+            geo_sa4 = str(row.key)
+            combine = row.value
+            if geo_sa4 not in code_heat_dict:
+                code_heat_dict[geo_sa4] = 0
+            code_heat_dict[geo_sa4] += combine['like_count'] * 0.1 + combine['retweet_count'] * 0.2 + combine[
+                'reply_count'] * 0.3 + combine['quote_count'] * 0.3
+
+        for feature in geojson['features']:
+            sa4_code = feature['properties']['SA4_CODE']
+            if str(sa4_code) in code_heat_dict:
+                feature['properties']['homeless_heat'] = code_heat_dict[sa4_code]
+            else:
+                feature['properties']['homeless_heat'] = 0
+
+        return geojson
+
+    def get_twitter_sentiment_gcc(self, db_name):
+        db = self.couch_api[db_name]
+
+        rows = db.view('_design/by_sentiment_gcc/_view/by_sentiment_gcc')
+        docs = {}
+        for row in rows:
+            geo_gcc = row.key
+            sentiment = row.value
+            if geo_gcc not in docs:
+                docs[geo_gcc] = 0
+            else:
+                docs[geo_gcc] += sentiment
+        return docs
+
+    def get_sudo_abs_regional_population_sentiment_weighted(self, db_name):
+        db = self.couch_api[db_name]
+
+        rows = db.view('_design/by_abs_regional_population/_view/by_abs_regional_population')
+
+        persons_total = 0
+        for row in rows:
+            state_name, state_persons_total = row.key
+            persons_total += state_persons_total
+
+        # '1gsyd', '2gmel', '3gbri', '4gade', '5gper', '6ghob', '7gdar', '8acte', '9oter'
+        gcc_state_map = {
+            '8acte': 'Australian Capital Territory',
+            '1gsyd': 'New South Wales',
+            '7gdar': 'Northern Territory',
+            '3gbri': 'Queensland',
+            '4gade': 'South Australia',
+            '9oter': 'Tasmania',
+            '2gmel': 'Victoria',
+            '5gper': 'Western Australia',
+        }
+        gcc_weighted_dict = {}
+        for row in rows:
+            state_name, state_persons_total = row.key
+            gcc_weighted_dict[state_name] = state_persons_total / persons_total
+
+        gcc_sentiment = self.get_twitter_sentiment_gcc('twitter')
+
+        gcc_sentiment_weighted = {}
+        for gcc, sentiment in gcc_sentiment.items():
+            if gcc in gcc_state_map:
+                state = gcc_state_map[gcc]
+                gcc_sentiment_weighted[state] = sentiment * gcc_weighted_dict[state]
+        return gcc_sentiment_weighted
+
+    def get_twitter_sentiment_period(self, db_name, kind):
+        db = self.couch_api[db_name]
+        rows = db.view('_design/by_sentiment_day/_view/by_sentiment_time')
+
+        sentiment_counts = defaultdict(lambda: defaultdict(int))
+
+        for row in rows:
+            dt = datetime.strptime(row.key[:19], "%Y-%m-%dT%H:%M:%S")  # Convert timestamp string to datetime
+            sentiment = row.value
+
+            if kind == "year":
+                key = str(dt.month)  # for each month
+            elif kind == "month":
+                # quartile = dt.day // 8  # Divide the month into roughly 4 parts
+                # key = f"{quartile * 8 + 1}-{min((quartile + 1) * 8, 31)}"
+                key = str(dt.day)
+            elif kind == "week":
+                key = str(dt.weekday())  # 0 for Monday, 6 for Sunday
+            elif kind == "day":
+                segment = dt.hour // 2  # Divide the day into 12 parts
+                key = f"{segment * 2}-{min((segment + 1) * 2, 23)}"
+            else:
+                raise ValueError("Invalid 'kind' value. It should be one of ['year', 'month', 'week', 'day']")
+
+            if -1 <= sentiment < -0.25:
+                sentiment_counts[key]['negative'] += 1
+            elif -0.25 <= sentiment <= 0.25:
+                sentiment_counts[key]['neutral'] += 1
+            elif 0.25 < sentiment <= 1:
+                sentiment_counts[key]['positive'] += 1
+
+        return sentiment_counts
