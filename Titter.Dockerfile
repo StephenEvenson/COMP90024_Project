@@ -10,7 +10,7 @@ ENV PYTHONUNBUFFERED 1
 
 
 RUN apt-get update \
-    && apt-get -y install gcc libffi-dev  \
+    && apt-get -y install gcc g++ make libffi-dev libopenmpi-dev openmpi-bin  \
     && pip install --upgrade pip setuptools wheel  \
     && pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu \
     && pip install -r backend/data_process/requirements.txt

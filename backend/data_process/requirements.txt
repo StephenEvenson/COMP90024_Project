@@ -14,3 +14,4 @@ uvicorn
 tqdm
 sentence-transformers
 alt-profanity-check
+mpi4py
