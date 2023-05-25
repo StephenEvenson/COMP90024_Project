@@ -21,9 +21,8 @@ const HomelessPage = () => {
   return (
     <DefaultLayout>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        {/* # Homeless topics */}
-        {/*<CardOne/>*/}
-        {/* # Homeless topics */}
+        <CardTotalMastodon/>
+        <CardTotalTweets/>
         <div className='col-span-2'>
           <MessageBox max_num={10} server={'.au'} interval={5000} key={'.au'}/>
         </div>
@@ -33,23 +32,13 @@ const HomelessPage = () => {
         <div className='col-span-2'>
           <MessageBox max_num={10} server={'.social'} interval={5000} key={'.social'}/>
         </div>
-        {/*<CardTwo/>*/}
-        <CardTotalMastodon/>
-        <CardTotalTweets/>
       </div>
 
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-        <MapHover/>
-        <ChartTwo/>
+        <MapHover />
+        {/*<ChartTwo/>*/}
         <ChartThree/>
         <ChartOne/>
-
-
-        {/*/!*<MapOne />*!/*/}
-        {/*<div className="col-span-12 xl:col-span-8">*/}
-        {/*  <TableOne/>*/}
-        {/*</div>*/}
-        {/*<TeamCard/>*/}
       </div>
     </DefaultLayout>
   );

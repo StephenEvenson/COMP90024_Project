@@ -1,6 +1,7 @@
 import React, {useEffect} from "react";
 import {MapProvider, Map, useMap} from "react-map-gl";
 import SaLayer from "./SaLayer";
+import SaHomeLessLayer from "./SaHomeLessLayer";
 
 
 const MapHomeless: React.FC = () => {
@@ -20,7 +21,7 @@ const MapHomeless: React.FC = () => {
             mapStyle='mapbox://styles/mapbox/streets-v12'
             mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
           >
-            <SaLayer/>
+            <SaHomeLessLayer/>
           </Map>
         </div>
       </div>

@@ -1,15 +1,13 @@
 import React, {useEffect} from "react";
 import {MapProvider, Map, useMap} from "react-map-gl";
-// import MyComponent from "./MyComponent";
-// import Sa4Layer from "./Sa4Layer";
-import SaLayer from "./SaLayer";
+import SaHomeLessLayer from "./SaHomeLessLayer";
 
 
 const MapHover: React.FC = () => {
   return (
     <MapProvider>
       <div
-        className='col-span-12 rounded-sm border border-stroke bg-white py-6 px-7.5 shadow-default dark:border-strokedark h-90 dark:bg-boxdark xl:col-span-6 xl:h-full'>
+        className='col-span-12 rounded-sm border border-stroke bg-white py-6 px-7.5 shadow-default dark:border-strokedark h-90 dark:bg-boxdark xl:col-span-12 xl:h-150'>
         <div className='w-full h-full'>
           <Map
             id='myMap'
@@ -22,7 +20,7 @@ const MapHover: React.FC = () => {
             mapStyle='mapbox://styles/mapbox/streets-v12'
             mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
           >
-            <SaLayer/>
+            <SaHomeLessLayer/>
           </Map>
         </div>
       </div>

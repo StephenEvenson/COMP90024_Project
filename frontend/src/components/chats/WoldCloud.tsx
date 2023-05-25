@@ -8,7 +8,7 @@ import {BsMastodon} from "react-icons/bs";
 export const RWordCloud = (props: { data: { text: string, value: number }[] }) => {
   return (
     <div
-      className='rounded-sm border border-stroke bg-white pt-5 px-6 shadow-default dark:border-strokedark dark:bg-boxdark'
+      className='rounded-sm border border-stroke bg-white pt-5 px-6 shadow-default dark:border-strokedark dark:bg-boxdark h-94 xl:h-94'
     >
       {/*<div className=' flex space-x-2 items-center pb-5'>*/}
       {/*  <HiLanguage className='text-xl'/>*/}

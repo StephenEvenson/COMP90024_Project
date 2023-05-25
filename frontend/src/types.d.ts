@@ -10,6 +10,7 @@ export interface MessageItem {
 export interface TwitterCount {
   all: number,
   homeless: number,
+  high_abusive_scores: number,
 }
 
 export interface MastodonCount {
@@ -18,7 +19,7 @@ export interface MastodonCount {
   high_abusive_scores: number,
 }
 
-export interface Sa4SudoHomeless {
+export interface Sa4GeoData {
   FeatureCollection: string,
   features: any[],
 }

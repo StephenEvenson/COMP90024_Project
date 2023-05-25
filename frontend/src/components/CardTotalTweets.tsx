@@ -7,6 +7,7 @@ const CardTotalTweets = () => {
   const [data, setData] = useState<TwitterCount>({
     all: 0,
     homeless: 0,
+    high_abusive_scores: 0,
   });
   useEffect(() => {
     const getData = async () => {
@@ -51,14 +52,14 @@ const CardTotalTweets = () => {
           {/*    Language*/}
           {/*  </div>*/}
           {/*</div>*/}
-          {/*<div className="flex justify-between text-title-sm font-bold text-black dark:text-white w-full">*/}
-          {/*  <div>*/}
-          {/*    {data!.abuse}*/}
-          {/*  </div>*/}
-          {/*  <div className="flex items-center gap-1 text-sm font-medium text-secondary">*/}
-          {/*    Vulgar words*/}
-          {/*  </div>*/}
-          {/*</div>*/}
+          <div className="flex justify-between text-title-sm font-bold text-black dark:text-white w-full">
+            <div>
+              {data!.high_abusive_scores || 0}
+            </div>
+            <div className="flex items-center gap-1 text-sm font-medium text-secondary">
+              Vulgar words
+            </div>
+          </div>
         </div>
       </div>
     </div>

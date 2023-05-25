@@ -1,18 +1,10 @@
 import DefaultLayout from '../../components/layout/DefaultLayout';
-import CardFour from '../../components/CardFour';
-import CardOne from '../../components/CardOne';
 import CardTotalTweets from '../../components/CardTotalTweets';
-import CardTwo from '../../components/CardTwo';
-import ChartOne from '../../components/ChartOne';
 import ChartThree from '../../components/ChartThree';
-import ChartTwo from '../../components/ChartTwo';
-import TeamCard from '../../components/TeamCard';
-import TableOne from '../../components/TableOne';
-import MapHover from "../../components/maps/mapHover";
-// import useData from "../../hooks/useData";
 import MessageBox from "../../components/MessageBox/MessageBox";
 import CardTotalMastodon from "../../components/CardTotalMastodon";
 import MapHomeless from "../../components/maps/mapHomeless";
+import HomelessLineChart from "../../components/HomelessLineChart";
 
 
 const HomelessPage = () => {
@@ -25,7 +17,7 @@ const HomelessPage = () => {
         {/*<CardOne/>*/}
         {/* # Homeless topics */}
         <div className='col-span-2'>
-          <MessageBox max_num={30} server={'.au'} homeless={true}  sentiment={false} />
+          <MessageBox max_num={30} server={'.au'} homeless={true} sentiment={false}/>
         </div>
         {/*<CardTwo/>*/}
         <CardTotalMastodon/>
@@ -35,6 +27,7 @@ const HomelessPage = () => {
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
         <MapHomeless/>
         <ChartThree/>
+        <HomelessLineChart/>
         {/*<ChartTwo/>*/}
 
         {/*<ChartOne/>*/}

@@ -3,7 +3,7 @@ import {useEffect, useRef, useState} from "react";
 import mapboxgl from "mapbox-gl";
 import ReactDOM from "react-dom/client"
 
-import {getSa4SudoHomelessData} from "../../api/api";
+import {getSa4CombineHomelessHeat} from "../../api/api";
 
 const Popup = (props: {
   properties: any,
@@ -11,6 +11,8 @@ const Popup = (props: {
 }) => {
   // console.log(props.e.features.properties)
   const {properties} = props
+  console.log(properties.lang)
+  const lang = JSON.parse(properties.lang)
   return (
     <div className='p-2 max-w-80 overflow-clip'>
       <div className='text-base font-bold text-black-2'>{properties.SA4_NAME || 'Title'}</div>
@@ -19,9 +21,17 @@ const Popup = (props: {
         <div className=''> {properties.homeless_total || "UnKnow"}</div>
       </div>
       <div className='flex space-x-2'>
-        <div>Total tweets number:</div>
-        <div className=''> {properties.homeless_total || "UnKnow"}</div>
+        <div>Homeless heat:</div>
+        <div className=''> {properties.homeless_heat}</div>
       </div>
+      {Object.keys(lang).length !== 0 && (
+        <div className='flex space-x-2'>
+          <div>Language:</div>
+          {Object.keys(lang).slice(0, 5).map((ll: string) => (
+            <div>{ll}</div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -33,10 +43,9 @@ export default function () {
   const [geojsonData, setGeojsonData] = useState<any>(null)
 
   useEffect(() => {
-    getSa4SudoHomelessData().then((data) => {
+    getSa4CombineHomelessHeat().then((data) => {
       setGeojsonData(data);
-      console.log(data)
-      // console.log({'geojsonData': data})
+      // console.log(data)
     })
   }, [])
 
@@ -49,7 +58,6 @@ export default function () {
     map.addControl(new mapboxgl.ScaleControl(
       {maxWidth: 80, unit: 'metric'},
     ), 'top-right')
-
 
     let hoveredAreaId: number | null = null;
     // When the user moves their mouse over the phn-fill layer, we'll update the

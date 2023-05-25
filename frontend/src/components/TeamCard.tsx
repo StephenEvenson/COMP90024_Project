@@ -10,7 +10,7 @@ const teamMembers = [
   {
     id: 1,
     name: 'Juntao Lu',
-    image: UserOne,
+    image: '/ljt.png',
     job: 'Frontend Developer, Algorithm Engineer, Data Analyst',
     link: 'https://github.com/ralph0813',
     // description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In euismod ipsum et dui rhoncus auctor.',
@@ -18,28 +18,28 @@ const teamMembers = [
   {
     id: 2,
     name: 'Jiahao Shen',
-    image: UserThree,
+    image: '/sjh.jpg',
     job: 'Ansible Engineer, Backend Developer, Docker Engineer',
     link: '',
   },
   {
     id: 3,
     name: 'Runtian Zhang',
-    image: UserFour,
+    image: UserThree,
     job: 'Ansible Engineer, Backend Developer, Docker Engineer',
     link: '',
   },
   {
     id: 4,
     name: 'Jie Shen',
-    image: UserTwo,
+    image: '/sj.jpg',
     job: 'Data Analyst, UI/UX Designer',
     link: '',
   },
   {
     id: 5,
     name: 'Yuchen Liu',
-    image: UserFive,
+    image: '/lyc.jpg',
     job: 'Data Analyst, Backend Developer, Report Writer',
     link: '',
   }
@@ -61,7 +61,7 @@ const TeamCard = () => {
             key={member.id}
           >
             <div className="relative h-14 w-14 rounded-full">
-              <img src={member.image} alt="avatar"/>
+              <img src={member.image} alt="avatar" className='rounded-full'/>
               {/*<span className="absolute right-0 bottom-0 h-3.5 w-3.5 rounded-full border-2 border-white bg-meta-3"></span>*/}
             </div>
 

@@ -1,5 +1,5 @@
 import {request} from "./request";
-import {MastodonCount, MessageItem, Sa4SudoHomeless, TwitterCount} from "../types";
+import {MastodonCount, MessageItem, Sa4GeoData, TwitterCount} from "../types";
 
 
 export const getMastodonLatest = async (interval: number, source?: string) => {
@@ -35,8 +35,19 @@ export const getMastodonLangCount = async (interval: number) => {
 
 export const getSa4SudoHomelessData = async () => {
   const result = await request.get(`/sudo/sudo_sa4_homeless`);
-  return result!.data!.docs as Sa4SudoHomeless[];
+  return result!.data!.docs as Sa4GeoData[];
 }
+
+export const getSa4TwitterHomelessHeat = async () => {
+  const result = await request.get(`/twitter/homeless/heat`);
+  return result!.data!.docs as Sa4GeoData[];
+}
+
+export const getSa4CombineHomelessHeat = async () => {
+  const result = await request.get(`/twitter/homeless/combine`);
+  return result!.data!.docs as Sa4GeoData[];
+}
+
 
 export const getHomelessFactors = async (area?: string) => {
   const result = await request.get(`/twitter/homeless/distribution/${area || 'all'}`);
@@ -45,5 +56,15 @@ export const getHomelessFactors = async (area?: string) => {
 
 export const getTwitterSentimentPeriod = async (period: string) => {
   const result = await request.get(`/twitter/sentiment/period/${period}`);
+  return result!.data!.docs;
+}
+
+export const getSentimentWeighted = async () => {
+  const result = await request.get(`/twitter/sentiment/weighted`);
+  return result!.data!.docs;
+}
+
+export const getMastodonAbuseLang = async () => {
+  const result = await request.get(`mastodon/abuse/lang`);
   return result!.data!.docs;
 }
