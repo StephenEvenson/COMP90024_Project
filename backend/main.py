@@ -104,7 +104,7 @@ async def get_sudo_sa4_income():
 
 # twitter
 @app.get("/api/twitter/init")
-async def init_mastodon():
+async def init_twitter():
     return {"message": "twitter initialized"}
 
 
