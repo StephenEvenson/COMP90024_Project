@@ -19,7 +19,7 @@
       "map": "function(doc) { if(doc.abusive_score > 0.5) { emit(1, null); } }",
       "reduce": "_count"
     },
-    "by_lang": {
+    "by_language": {
       "map": "function(doc) { if(doc.language) { emit(doc.language, doc.abusive_score); } }"
     }
   },
