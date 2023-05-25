@@ -16,3 +16,4 @@ sentence-transformers
 alt-profanity-check
 mpi4py
 couchdb
+pandas
