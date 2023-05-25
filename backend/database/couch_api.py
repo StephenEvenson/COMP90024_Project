@@ -478,6 +478,8 @@ class DatabaseService:
                 feature['properties']['homeless_total'] = 0
             if str(sa4_code) in code_lang_dict:
                 feature['properties']['lang'] = code_lang_dict[sa4_code]
+            else:
+                feature['properties']['lang'] = {}
 
         return geojson
 

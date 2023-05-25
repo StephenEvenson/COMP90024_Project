@@ -5,15 +5,15 @@ from database.couch_api import DatabaseService
 
 app = FastAPI()
 
-read_db_host = os.environ.get('READ_DB_HOST')
-read_db_port = os.environ.get('READ_DB_PORT')
-write_db_port = os.environ.get('WRITE_DB_PORT')
-write_db_host = os.environ.get('WRITE_DB_HOST')
+# read_db_host = os.environ.get('READ_DB_HOST')
+# read_db_port = os.environ.get('READ_DB_PORT')
+# write_db_port = os.environ.get('WRITE_DB_PORT')
+# write_db_host = os.environ.get('WRITE_DB_HOST')
 
-# read_db_host = '192.168.0.80'
-# read_db_port = '5984'
-# write_db_port = '5984'
-# write_db_host = '192.168.0.80'
+read_db_host = '192.168.0.80'
+read_db_port = '5984'
+write_db_port = '5984'
+write_db_host = '192.168.0.80'
 
 read_db_service = DatabaseService(server_url=f'http://{read_db_host}:{read_db_port}/', username='admin',
                                   password='admin')
