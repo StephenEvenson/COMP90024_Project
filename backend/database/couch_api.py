@@ -238,7 +238,7 @@ class DatabaseService:
 
     def get_mastodon_abuse_lang_percent(self, db_name):
         db = self.couch_api[db_name]
-        rows = db.view('_design/by_lang/_view/by_lang')
+        rows = db.view('_design/by_language/_view/by_language')
         # get percentage of abusive tweets per language
         lang_count = defaultdict(int)
         lang_abuse_count = defaultdict(int)
