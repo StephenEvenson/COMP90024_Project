@@ -98,11 +98,17 @@
     executable: /bin/bash
   become: yes
 
-- name: Restart Docker service
-  ansible.builtin.shell: |
-    sudo systemctl restart docker
-  args:
-    executable: /bin/bash
+- name: Create Docker daemon.json if it doesn't exist
+  ansible.builtin.copy:
+    dest: /etc/docker/daemon.json
+    content: "{{ {'insecure-registries': [groups['ServerNodes'][0] + ':5000'], 'registry-mirrors': ['https://hub-mirror.c.163.com', 'https://mirror.baidubce.com']} | to_nice_json }}"
+    force: yes
+  become: yes
+
+- name: Restart Docker
+  ansible.builtin.systemd:
+    name: docker
+    state: restarted
   become: yes
 
 # # Restart Docker daemon

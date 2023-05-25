@@ -1,0 +1,13 @@
+# Build Docker image
+- name: Build an image of frontend and push it to local repo
+  docker_image:
+    build:
+      path: '~/COMP90024_Project/frontend'
+      pull: yes
+    name: "{{ groups['ServerNodes'][0] }}:{{ ports.registry }}/comp90024/frontend"
+    tag: latest
+    source: build
+    push: yes
+    force_source: yes
+  become: yes
+  environment: "{{ proxy_env }}"

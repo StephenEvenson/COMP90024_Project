@@ -1,0 +1,14 @@
+# Build Docker image
+- name: Build an image of backend and push it to local repo
+  docker_image:
+    build:
+      path: '~/COMP90024_Project/backend'
+      dockerfile: Backend.Dockerfile
+      pull: yes
+    name: "{{ groups['ServerNodes'][0] }}:{{ ports.registry }}/comp90024/backend"
+    tag: latest
+    source: build
+    push: yes
+    force_source: yes
+  become: yes
+  environment: "{{ proxy_env }}"

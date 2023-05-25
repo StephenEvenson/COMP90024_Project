@@ -1,0 +1,18 @@
+# Create new Docker container and start container
+- name: Create and start Docker container
+  become: yes
+  docker_container:
+    name: process
+    image: "{{ groups['ServerNodes'][0] }}:5000/comp90024/process:latest"
+    state: started
+    pull: false
+    env:
+      WRITE_DB_HOST: "{{ groups['MasterNode'][0] }}"
+      WRITE_DB_PORT: "{{ ports.couchdb }}"
+      NLP_PORT : "{{ ports.nlp }}"
+      NLP_HOST : "{{ groups['ServerNodes'][0] }}"
+      JSON_PATH: "/data/twitter-huge.json"
+      OMPI_ALLOW_RUN_AS_ROOT: "1"
+      OMPI_ALLOW_RUN_AS_ROOT_CONFIRM: "1"
+    volumes:
+      - "/data/twitter-huge.json:/data/twitter-huge.json"

@@ -1,0 +1,7 @@
+
+
+- name: Generate nginx.conf
+  ansible.builtin.copy:
+    src: nginx.conf
+    dest: /home/ubuntu/nginx.conf
+  become: yes

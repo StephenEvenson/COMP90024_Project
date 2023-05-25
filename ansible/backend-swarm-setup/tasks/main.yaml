@@ -1,0 +1,87 @@
+- name: Get info on service
+  community.docker.docker_swarm_service_info:
+    name: backend
+  register: service_info
+  become: yes
+
+# Create new Docker container for data analytics scripts and start container
+- name: Create and start Docker container
+  become: yes
+  community.docker.docker_swarm_service:
+    name: backend
+    image: "{{ groups['ServerNodes'][0] }}:{{ ports.registry }}/comp90024/backend"
+    replicas: "{{ replicas.backend }}"
+    networks:
+      - name: comp90024
+    publish:
+      - target_port: 8000
+        published_port: "{{ ports.backend }}"
+        protocol: tcp
+        mode: ingress
+    placement:
+      constraints:
+        - node.role != manager
+    env:
+      WRITE_DB_HOST: "{{ groups['MasterNode'][0] }}"
+      WRITE_DB_PORT: "{{ ports.couchdb }}"
+      READ_DB_HOST: "{{ groups['ServerNodes'][0] }}"
+      READ_DB_PORT: "{{ ports.couchdb }}"
+  when: service_info.exists == False
+
+- name: Update Docker container
+  become: yes
+  community.docker.docker_swarm_service:
+    name: backend
+    image: "{{ groups['ServerNodes'][0] }}:{{ ports.registry }}/comp90024/backend"
+    replicas: "{{ replicas.backend }}"
+    networks:
+      - name: comp90024
+    publish:
+      - target_port: 8000
+        published_port: "{{ ports.backend }}"
+        protocol: tcp
+        mode: ingress
+    placement:
+      constraints:
+        - node.role != manager
+    env:
+      WRITE_DB_HOST: "{{ groups['MasterNode'][0] }}"
+      WRITE_DB_PORT: "{{ ports.couchdb }}"
+      READ_DB_HOST: "{{ groups['ServerNodes'][0] }}"
+      READ_DB_PORT: "{{ ports.couchdb }}"
+    update_config:
+      parallelism: 2
+      delay: 10s
+      failure_action: rollback
+      order: stop-first
+    rollback_config:
+      parallelism: 2
+      delay: 10s
+      order: stop-first
+  when: service_info.exists == True
+
+- name: Wait for backend to start
+  uri:
+    url: "http://{{ groups['ServerNodes'][0] }}:{{ ports.backend }}/hello/hi"
+    method: GET
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 10
+  delay: 5
+  become: yes
+
+- name: Init mastodon database
+  ansible.builtin.command:
+    cmd: "curl -X GET http://{{ groups['ServerNodes'][0] }}:{{ ports.backend }}/api/mastodon/init"
+  become: yes
+
+- name: Init sudo database
+  ansible.builtin.command:
+    cmd: "curl -X GET http://{{ groups['ServerNodes'][0] }}:{{ ports.backend }}/api/sudo/init"
+  become: yes
+
+- name: Init twitter database
+  ansible.builtin.command:
+    cmd: "curl -X GET http://{{ groups['ServerNodes'][0] }}:{{ ports.backend }}/api/twitter/init"
+  become: yes

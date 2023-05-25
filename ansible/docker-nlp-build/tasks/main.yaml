@@ -1,0 +1,14 @@
+# Build Docker image
+- name: Build an image of nlp and push it to local repo
+  docker_image:
+    build:
+      path: '~/COMP90024_Project'
+      dockerfile: Nlp.Dockerfile
+      pull: yes
+    name: "{{ groups['ServerNodes'][0] }}:{{ ports.registry }}/comp90024/nlp_server"
+    tag: latest
+    source: build
+    push: yes
+    force_source: yes
+  become: yes
+  environment: "{{ proxy_env }}"

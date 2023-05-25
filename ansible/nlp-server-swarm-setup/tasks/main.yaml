@@ -1,0 +1,52 @@
+- name: Get info on service
+  community.docker.docker_swarm_service_info:
+    name: nlp_server
+  register: service_info
+  become: yes
+
+- name: Create and start Docker service
+  become: yes
+  community.docker.docker_swarm_service:
+    name: nlp_server
+    image: "{{ groups['ServerNodes'][0] }}:{{ ports.registry }}/comp90024/nlp_server"
+    replicas: "{{ replicas.nlp }}"
+    env:
+      COUCHDB_HOST: "{{ groups['MasterNode'][0] }}"
+      COUCHDB_PORT: "{{ ports.couchdb }}"
+    publish:
+      - target_port: 8000
+        published_port: "{{ ports.nlp }}"
+        protocol: tcp
+        mode: ingress
+    placement:
+      constraints:
+        - node.role != manager
+  when: service_info.exists == False
+
+- name: Update Docker service
+  become: yes
+  community.docker.docker_swarm_service:
+    name: nlp_server
+    image: "{{ groups['ServerNodes'][0] }}:{{ ports.registry }}/comp90024/nlp_server"
+    replicas: "{{ replicas.nlp }}"
+    env:
+      COUCHDB_HOST: "{{ groups['MasterNode'][0] }}"
+      COUCHDB_PORT: "{{ ports.couchdb }}"
+    publish:
+      - target_port: 8000
+        published_port: "{{ ports.nlp }}"
+        protocol: tcp
+        mode: ingress
+    placement:
+      constraints:
+        - node.role != manager
+    update_config:
+      parallelism: 2
+      delay: 10s
+      failure_action: rollback
+      order: stop-first
+    rollback_config:
+      parallelism: 2
+      delay: 10s
+      order: stop-first
+  when: service_info.exists == True

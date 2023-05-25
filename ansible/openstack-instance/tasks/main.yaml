@@ -21,31 +21,13 @@
   loop: '{{ os_instance.results }}'
   when: item.server is defined
 
-# - name: Wait for connection
-#   wait_for:
-#     host: "{{ item.server.addresses['qh2-uom-internal'][0]['addr'] }}"
-#     port: 443
-#     state: started
-#     delay: 10
-#     timeout: 300
-#   loop: '{{ os_instance.results }}'
-#   delegate_to: localhost
-
 - name: Wait for connection
   ansible.builtin.wait_for_connection:
-    delay: 0
-    # delay: 60
+#    delay: 0
+    delay: 60
     timeout: 300
   loop: '{{ os_instance.results }}'
   when: item.server is defined
-
-# - name: Wait for connection
-#   ansible.builtin.shell: |
-#     set timeout 300
-#     ssh -i ansible_key_72.pem ubuntu@{{ item.server.addresses['qh2-uom-internal'][0]['addr'] }} -o StrictHostKeyChecking=no
-#     exit 0
-#   loop: '{{ os_instance.results }}'
-#   when: item.server is defined
 
 # Add hosts to Ansible in-memory inventory
 - name: Add host

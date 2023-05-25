@@ -1,0 +1,6 @@
+- name: Create a network
+  community.docker.docker_network:
+    name: comp90024
+    driver: overlay
+    state: present
+  become: yes

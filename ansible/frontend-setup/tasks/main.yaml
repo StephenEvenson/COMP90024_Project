@@ -1,23 +1,4 @@
 
-# Build Docker image
-- name: Build an image and push it to local repo
-  docker_image:
-    build:
-      path: '~/COMP90024_Project/frontend'
-      pull: yes
-    name: frontend
-    tag: latest
-    source: build
-    force_source: yes
-  become: yes
-  environment: "{{ proxy_env }}"
-
-# Stop Docker container
-- name: Stop Docker container
-  become: yes
-  docker_container:
-    name: frontend
-    state: absent
 
 - name: Generate nginx.conf
   template:

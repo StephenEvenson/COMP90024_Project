@@ -1,0 +1,61 @@
+- name: Get info on service
+  community.docker.docker_swarm_service_info:
+    name: frontend
+  register: service_info
+  become: yes
+
+# Create new Docker container and start container
+- name: Create and start Docker container
+  become: yes
+  community.docker.docker_swarm_service:
+    name: frontend
+    image: "{{ groups['ServerNodes'][0] }}:{{ ports.registry }}/comp90024/frontend"
+    replicas: "{{ replicas.frontend }}"
+    networks:
+      - name: comp90024
+    publish:
+      - target_port: 80
+        published_port: "{{ ports.frontend }}"
+        protocol: tcp
+        mode: ingress
+    placement:
+      constraints:
+        - node.role != manager
+    mounts:
+      - target: /etc/nginx/conf.d/default.conf
+        source: /home/ubuntu/nginx.conf
+        type: bind
+#    volumes:
+#      - "/home/ubuntu/nginx.conf:/etc/nginx/conf.d/default.conf"
+  when: service_info.exists == False
+
+- name: update Docker container
+  become: yes
+  community.docker.docker_swarm_service:
+    name: frontend
+    image: "{{ groups['ServerNodes'][0] }}:{{ ports.registry }}/comp90024/frontend"
+    replicas: "{{ replicas.frontend }}"
+    networks:
+      - name: comp90024
+    publish:
+      - target_port: 80
+        published_port: "{{ ports.frontend }}"
+        protocol: tcp
+        mode: ingress
+    placement:
+      constraints:
+        - node.role != manager
+    mounts:
+      - target: /etc/nginx/conf.d/default.conf
+        source: /home/ubuntu/nginx.conf
+        type: bind
+    update_config:
+      parallelism: 2
+      delay: 10s
+      failure_action: rollback
+      order: stop-first
+    rollback_config:
+      parallelism: 2
+      delay: 10s
+      order: stop-first
+  when: service_info.exists == True

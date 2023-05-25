@@ -32,10 +32,3 @@ ports:
   nlp: 8180
   couchdb: 5984
   backend: 8181
-  registry: 5000
-  frontend: 80
-
-replicas:
-  nlp: 3
-  backend: 3
-  frontend: 3

@@ -1,0 +1,34 @@
+# Clone source code repository
+- name: Clone the code repository into home directory
+  git:
+    repo: "{{git_repo}}"
+    dest: ~/COMP90024_Project
+    single_branch: yes
+    version: master
+  environment: "{{ proxy_env }}"
+  become: yes
+
+# Create Docker config directory
+- name: Make sure that Docker config directory exists
+  become: yes
+  file:
+    path: '~/.docker'
+    state: 'directory'
+
+# Set Docker proxy for University of Melbourne Research Cloud
+- name: Ensure Docker client proxy settings are present on the server
+  become: yes
+  copy:
+    content: "{{ docker_proxy_settings }}"
+    dest: ~/.docker/config.json
+
+- name: Ensure docker registry is running
+  community.docker.docker_container:
+    name: registry
+    image: registry:2
+    state: started
+    restart_policy: always
+    ports:
+      - "5000:5000"
+  become: yes
+  environment: "{{ proxy_env }}"
