@@ -1,5 +1,5 @@
 import {request} from "./request";
-import {MessageItem, Sa4SudoHomeless, TwitterCount} from "../types";
+import {MastodonCount, MessageItem, Sa4SudoHomeless, TwitterCount} from "../types";
 
 
 export const getMastodonLatest = async (interval: number, source?: string) => {
@@ -13,9 +13,9 @@ export const getMastodonLatest = async (interval: number, source?: string) => {
   })) as MessageItem[];
 }
 
-export const getTwitterCount = async (type: 'all' | 'homeless' | 'abuse') => {
+export const getTwitterCount = async (type: 'all' | 'homeless' ) => {
   const result = await request.get(`/twitter/count/${type}`);
-  return result!.data!.count as TwitterCount;
+  return result!.data!.docs as TwitterCount;
 }
 
 export const getMastodonCount = async (type: 'all' | 'homeless' | 'abuse') => {
@@ -23,18 +23,17 @@ export const getMastodonCount = async (type: 'all' | 'homeless' | 'abuse') => {
   const count = result!.data!.docs
   return {
     all: count.total,
-    homeless: count.positive_homeless_scores,
-    abuse: count.high_abusive_scores,
-  } as TwitterCount;
+    positive_homeless_scores: count.positive_homeless_scores,
+    high_abusive_scores: count.high_abusive_scores,
+  } as MastodonCount;
 }
 
 export const getMastodonLangCount = async (interval: number) => {
   const result = await request.get(`/mastodon/lang/${interval}`);
-  const count = result!.data!.docs
-  return count;
+  return result!.data!.docs
 }
 
-export const getSa4SudoHomelessData = async (interval: number) => {
+export const getSa4SudoHomelessData = async () => {
   const result = await request.get(`/sudo/sudo_sa4_homeless`);
   return result!.data!.docs as Sa4SudoHomeless[];
 }

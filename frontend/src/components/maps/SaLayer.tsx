@@ -2,10 +2,8 @@ import {Layer, Source, useMap} from "react-map-gl";
 import {useEffect, useRef, useState} from "react";
 import mapboxgl from "mapbox-gl";
 import ReactDOM from "react-dom/client"
-import useData from "../../hooks/useData";
-import {Sa4SudoHomeless} from "../../types";
-// @ts-ignore
-import s4geojson from "./2011sa4.geojson";
+
+import {getSa4SudoHomelessData} from "../../api/api";
 
 const Popup = (props: {
   properties: any,
@@ -15,16 +13,15 @@ const Popup = (props: {
   const {properties} = props
   return (
     <div className='p-2 max-w-80 overflow-clip'>
-      <div className='text-base font-bold'>{properties.SA4_NAME || 'Title'}</div>
+      <div className='text-base font-bold text-black-2'>{properties.SA4_NAME || 'Title'}</div>
       <div className='flex space-x-2'>
         <div>Homeless number:</div>
-        <div className=''> {properties.homeless || "UnKnow"}</div>
+        <div className=''> {properties.homeless_total || "UnKnow"}</div>
       </div>
       <div className='flex space-x-2'>
         <div>Total tweets number:</div>
-        <div className=''> {properties.homeless || "UnKnow"}</div>
+        <div className=''> {properties.homeless_total || "UnKnow"}</div>
       </div>
-
     </div>
   )
 }
@@ -34,62 +31,13 @@ export default function () {
   const {myMap: mapRef} = useMap()
   const popUpRef = useRef(new mapboxgl.Popup({offset: 15}))
   const [geojsonData, setGeojsonData] = useState<any>(null)
-  const [fianlGeojsonData, setFinalGeojsonData] = useState<any>(null)
-
 
   useEffect(() => {
-    fetch('/geojsons/2011sa4.geojson')
-      .then(response => response.json())
-      .then(data => {
-        setGeojsonData(data);
-      })
-      .catch(error => console.error('Error:', error));
-  }, [])
-
-  const [{data}] = useData('/sudo/sudo_sa4_homeless', undefined) as any
-  const homelessData = data?.docs as Sa4SudoHomeless[]
-  if (homelessData && s4geojson.features) {
-    homelessData?.forEach((homeless, index) => {
-      s4geojson.features[index].properties.homeless = homeless
+    getSa4SudoHomelessData().then((data) => {
+      setGeojsonData(data);
+      console.log({'geojsonData': data})
     })
-  }
-
-  useEffect(() => {
-    fetch('/geojsons/2011sa4.geojson')
-      .then(response => response.json())
-      .then(data => {
-        setGeojsonData(data);
-      })
-      .catch(error => console.error('Error:', error));
   }, [])
-
-  useEffect(() => {
-    if (geojsonData && homelessData) {
-      // console.log(geojsonData, homelessData)
-      const homelessDictionary = homelessData.reduce((acc, item) => {
-        const key = item.sa4_code16;
-        const value = {
-          // @ts-ignore
-          sa4_name_2016: item.sa4_name_2016,
-          homeless_total: item.homeless_total
-        };
-        // @ts-ignore
-        acc[key] = value;
-        return acc;
-      }, {});
-      const new_json = JSON.parse(JSON.stringify(geojsonData))
-      new_json.features.forEach((feature: any, index: any) => {
-        // console.log(feature.properties)
-        const SA4_CODE = feature.properties.SA4_CODE
-        // @ts-ignore
-        const homeless = homelessDictionary[parseInt(SA4_CODE)]
-        if (homeless) {
-          feature.properties.homeless = homeless.homeless_total as number
-        }
-      })
-      setFinalGeojsonData(new_json)
-    }
-  }, [geojsonData, homelessData])
 
   function loadMap() {
     console.log('loadMap')
@@ -147,9 +95,7 @@ export default function () {
           .setDOMContent(popupNode)
           .addTo(map)
       }
-
     });
-
     // console.log(map)
     console.log('finish loadMap')
   }
@@ -182,7 +128,7 @@ export default function () {
       'fill-color': [
         'interpolate',
         ['linear'],
-        ['get', 'homeless'],
+        ['get', 'homeless_total'],
         0,
         '#F2F12D',
         100,
@@ -212,7 +158,8 @@ export default function () {
   }
 
   return (
-    <Source id={'sa4'} type='geojson' data={fianlGeojsonData} generateId={true}>
+    // @ts-ignore
+    <Source id={'sa4'} type='geojson' data={geojsonData} generateId={true}>
       {/*@ts-ignore */}
       <Layer {...borderLayer} />
       {/*@ts-ignore */}

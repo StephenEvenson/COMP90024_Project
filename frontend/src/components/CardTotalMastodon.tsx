@@ -1,14 +1,13 @@
 import {useEffect, useState} from "react";
 import {getMastodonCount} from "../api/api";
 import {BsMastodon} from "react-icons/bs";
-import {TwitterCount} from "../types";
+import {MastodonCount} from "../types";
 
 const CardTotalTweets = () => {
-  const [data, setData] = useState<TwitterCount>({
+  const [data, setData] = useState<MastodonCount>({
     all: 0,
-    homeless: 0,
-    language: 0,
-    abuse: 0
+    positive_homeless_scores: 0,
+    high_abusive_scores: 0,
   });
   useEffect(() => {
     const getData = async () => {
@@ -43,7 +42,7 @@ const CardTotalTweets = () => {
           </div>
           <div className="flex justify-between text-title-sm font-bold text-black dark:text-white w-full">
             <div>
-              {data!.homeless}
+              {data!.positive_homeless_scores}
             </div>
             <div className="flex items-center gap-1 text-sm font-medium text-meta-3">
               Homeless
@@ -59,7 +58,7 @@ const CardTotalTweets = () => {
           {/*</div>*/}
           <div className="flex justify-between text-title-sm font-bold text-black dark:text-white w-full">
             <div>
-              {data!.abuse}
+              {data!.high_abusive_scores}
             </div>
             <div className="flex items-center gap-1 text-sm font-medium text-secondary">
               Vulgar words
