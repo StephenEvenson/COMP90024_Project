@@ -12,6 +12,8 @@ This is a project for COMP90024 Cluster and Cloud Computing Assignment 2.
 ## How to run the project
 ```bash
 cd ansible
+sudo chmod +x env-script.sh
+./env-script.sh
 sudo chmod 400 ansible_key_72.pem
 sudo chmod +x run_bootstrap_infrastructure.sh
 ./run_bootstrap_infrastructure.sh
