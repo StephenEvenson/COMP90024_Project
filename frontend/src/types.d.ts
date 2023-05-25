@@ -10,12 +10,15 @@ export interface MessageItem {
 export interface TwitterCount {
   all: number,
   homeless: number,
-  language: number,
-  abuse: number
+}
+
+export interface MastodonCount {
+  all: number,
+  positive_homeless_scores: number,
+  high_abusive_scores: number,
 }
 
 export interface Sa4SudoHomeless {
-  sa4_code16: string,
-  sa4_name16: string,
-  homeless_total: number,
+  FeatureCollection: string,
+  features: any[],
 }

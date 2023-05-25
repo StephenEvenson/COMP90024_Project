@@ -22,11 +22,11 @@ const scenarios: {
     icon: <BiHomeAlt/>,
     name: 'Homeless',
   },
-  {
-    path: '/dashboard/sentiment',
-    icon: <BiHappy/>,
-    name: 'Sentiment',
-  },
+  // {
+  //   path: '/dashboard/sentiment',
+  //   icon: <BiHappy/>,
+  //   name: 'Sentiment',
+  // },
   {
     path: '/dashboard/language',
     icon: <HiLanguage/>,

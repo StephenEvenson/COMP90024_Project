@@ -187,7 +187,7 @@ const code2lan = {
   "zu": "Zulu"
 } as any
 
-const CardLangTweets = (props: { data: { text: string, value: number, }[], className?: string }) => {
+const CardLanMastodon = (props: { data: { text: string, value: number, }[], className?: string }) => {
 
   const data = [...props.data].sort((a, b) => b.value - a.value).slice(0, 9)
   const total = data.reduce((a, b) => a + b.value, 0)
@@ -214,7 +214,8 @@ const CardLangTweets = (props: { data: { text: string, value: number, }[], class
             </div>
           </div>
           {data.map((item, index) => (
-            <div className="flex justify-between text-title-sm font-bold text-black dark:text-white w-full">
+            <div className="flex justify-between text-title-sm font-bold text-black dark:text-white w-full"
+                 key={index.toString() + item}>
               <div>
                 {item.value}
               </div>
@@ -229,4 +230,4 @@ const CardLangTweets = (props: { data: { text: string, value: number, }[], class
   );
 };
 
-export default CardLangTweets;
+export default CardLanMastodon;
