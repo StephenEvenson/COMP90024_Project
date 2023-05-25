@@ -1,0 +1,16 @@
+anyio
+fastapi
+h11
+idna
+MarkupSafe==2.1.2
+packaging==23.1
+pycparser==2.21
+PyYAML==6.0
+resolvelib
+sniffio
+starlette
+typing_extensions
+uvicorn
+tqdm
+sentence-transformers
+alt-profanity-check
