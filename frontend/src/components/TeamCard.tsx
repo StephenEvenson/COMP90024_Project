@@ -50,7 +50,7 @@ const TeamCard = () => {
     <div
       className="col-span-12 rounded-sm border border-stroke bg-white py-6 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-4">
       <div className="mb-6 px-7.5 text-xl font-semibold text-black dark:text-white">
-        Team Members
+        Team Members (Group 72)
       </div>
 
       <div>
@@ -68,7 +68,7 @@ const TeamCard = () => {
             <div className="flex flex-1 items-center justify-between">
               <div>
                 <div className="font-medium text-black dark:text-white">
-                  {member.name}
+                  {member.name}  <span className='text-sm text-body'>(Melbourne)</span>
                 </div>
                 <p>
                 <span className="text-sm text-black dark:text-white">

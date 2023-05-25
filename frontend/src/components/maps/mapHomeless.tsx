@@ -1,15 +1,13 @@
 import React, {useEffect} from "react";
 import {MapProvider, Map, useMap} from "react-map-gl";
-// import MyComponent from "./MyComponent";
-// import Sa4Layer from "./Sa4Layer";
 import SaLayer from "./SaLayer";
 
 
-const MapHover: React.FC = () => {
+const MapHomeless: React.FC = () => {
   return (
     <MapProvider>
       <div
-        className='col-span-12 rounded-sm border border-stroke bg-white py-6 px-7.5 shadow-default dark:border-strokedark h-90 dark:bg-boxdark xl:col-span-6 xl:h-full'>
+        className='col-span-12 rounded-sm border border-stroke bg-white py-6 px-7.5 shadow-default dark:border-strokedark h-90 dark:bg-boxdark xl:col-span-8 xl:h-full'>
         <div className='w-full h-full'>
           <Map
             id='myMap'
@@ -30,4 +28,4 @@ const MapHover: React.FC = () => {
   )
 }
 
-export default MapHover;
+export default MapHomeless;

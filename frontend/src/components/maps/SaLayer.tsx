@@ -35,7 +35,7 @@ export default function () {
   useEffect(() => {
     getSa4SudoHomelessData().then((data) => {
       setGeojsonData(data);
-      console.log({'geojsonData': data})
+      // console.log({'geojsonData': data})
     })
   }, [])
 

@@ -7,6 +7,5 @@ export default function Team() {
     <DefaultLayout>
       <TeamCard/>
     </DefaultLayout>
-
   );
 }

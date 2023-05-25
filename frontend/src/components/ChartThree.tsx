@@ -1,6 +1,7 @@
 import {ApexOptions} from 'apexcharts';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import ReactApexChart from 'react-apexcharts';
+import {getHomelessFactors} from "../api/api";
 
 interface ChartThreeState {
   series: number[];
@@ -10,8 +11,8 @@ const options: ApexOptions = {
   chart: {
     type: 'donut',
   },
-  colors: ['#10B981', '#375E83', '#259AE6', '#FFA70B'],
-  labels: ['Remote', 'Hybrid', 'Onsite', 'Leave'],
+  colors: ['#10B981', '#375E83', '#259AE6', '#FFA70B', '#F43F5E'],
+  labels: ['Economic', 'Education', 'Job', 'Mental Health', 'Society'],
   legend: {
     show: true,
     position: 'bottom',
@@ -48,41 +49,51 @@ const options: ApexOptions = {
   ],
 };
 
-const states = [
-  {
-    name: 'All states',
-    phn_ids: [0],
-  },
-  {
-    name: 'Victoria',
-    phn_ids: [0],
-  },
-  {
-    name: 'New South Wales',
-    phn_ids: [1],
-  },
-  {
-    name: 'Queensland',
-    phn_ids: [2],
-  },
-  {
-    name: 'Other',
-    phn_ids: [3],
-  }
-]
+// const id2states ={
+//   '1gsyd': 'Sydney',
+//   '2gmel': 'Melbourne',
+//   '3gbri': 'Brisbane',
+//   '4gade': 'Adelaide',
+//   '5gper': 'Perth',
+//   '6ghob': 'Hobart',
+//   '7gdar': 'Darwin',
+//   '8acte': 'Canberra',
+//   '9oter': 'Unknown'
+// }
+
+const states2id = {
+  'All states': 'all',
+  'Sydney': '1gsyd',
+  'Melbourne': '2gmel',
+  'Brisbane': '3gbri',
+  'Adelaide': '4gade',
+  'Perth': '5gper',
+  'Hobart': '6ghob',
+  'Darwin': '7gdar',
+  'Canberra': '8acte',
+}
 
 
 const ChartThree: React.FC = () => {
-  const [state, setState] = useState<ChartThreeState>({
-    series: [65, 34, 12, 56],
-  });
+  const states = states2id
 
+  const [state, setState] = useState<ChartThreeState>({
+    series: [65, 34, 12, 56, 23],
+  });
+  const [selectedState, setSelectedState] = useState<string>('all')
+
+  useEffect(() => {
+    getHomelessFactors(selectedState).then((res) => {
+      const values = Object.values(res) as number[]
+      setState({series: values})
+    })
+  }, [selectedState])
   return (
     <div
       className="col-span-12 rounded-sm border border-stroke bg-white px-5 pt-7.5 pb-5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-4">
       <div className="mb-3 justify-between gap-4 sm:flex">
         <div>
-          <h5 className="text-xl font-semibold text-black dark:text-white">
+          <h5 className="text-2xl font-medium text-black-2 dark:text-white">
             Influencing factors of Homeless
           </h5>
         </div>
@@ -92,18 +103,20 @@ const ChartThree: React.FC = () => {
               name=""
               id=""
               className="relative z-20 inline-flex appearance-none bg-transparent py-1 pl-3 pr-8 text-sm font-medium outline-none"
+              onChange={(e) => {
+                const key = states[e.target.value as keyof typeof states]
+                setSelectedState(key)
+              }}
             >
-              {states.map((state) => (
+              {Object.keys(states).map((state) => (
                 <option
-                  value={state.name}
-                  key={state.name}
+                  value={state}
+                  key={state}
                 >
-                  {state.name}
+                  {state}
                 </option>
               ))}
 
-              {/*<option value="">Monthly</option>*/}
-              {/*<option value="">Yearly</option>*/}
             </select>
             <span className="absolute top-1/2 right-3 z-10 -translate-y-1/2">
               <svg
@@ -136,45 +149,6 @@ const ChartThree: React.FC = () => {
             series={state.series}
             type="donut"
           />
-        </div>
-      </div>
-
-      <div className="-mx-8 flex flex-wrap items-center justify-center gap-y-3">
-        <div className="w-full px-8 sm:w-1/2">
-          <div className="flex w-full items-center">
-            <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-primary"></span>
-            <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
-              <span> Economic </span>
-              <span> 65% </span>
-            </p>
-          </div>
-        </div>
-        <div className="w-full px-8 sm:w-1/2">
-          <div className="flex w-full items-center">
-            <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#6577F3]"></span>
-            <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
-              <span> Education </span>
-              <span> 34% </span>
-            </p>
-          </div>
-        </div>
-        <div className="w-full px-8 sm:w-1/2">
-          <div className="flex w-full items-center">
-            <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#8FD0EF]"></span>
-            <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
-              <span> Family </span>
-              <span> 45% </span>
-            </p>
-          </div>
-        </div>
-        <div className="w-full px-8 sm:w-1/2">
-          <div className="flex w-full items-center">
-            <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#0FADCF]"></span>
-            <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
-              <span> Unknown </span>
-              <span> 12% </span>
-            </p>
-          </div>
         </div>
       </div>
     </div>

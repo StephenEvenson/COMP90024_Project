@@ -1,6 +1,7 @@
 import {ApexOptions} from 'apexcharts';
 import React, {useEffect, useState} from 'react';
 import ReactApexChart from 'react-apexcharts';
+import {getTwitterSentimentPeriod} from "../api/api";
 
 const options: ApexOptions = {
   colors: ['#3C50E0', '#80CAEE'],
@@ -114,9 +115,6 @@ const ChartTwo: React.FC = () => {
 
   const [selectedState, setSelectedState] = useState<StatePhn>(states[0]);
 
-  useEffect(() => {
-    // console.log(selectedState);
-  }, [selectedState]);
 
   return (
     <div

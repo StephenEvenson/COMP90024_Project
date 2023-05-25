@@ -8,8 +8,12 @@ function List(props: {
   items: MessageItem [];
   removeItem: (index: number) => void;
   server: string;
+  sentiment?: boolean;
+  homeless?: boolean;
 }) {
   const {items, removeItem} = props;
+  const sentiment = props.sentiment ?? true;
+  const homeless = props.homeless ?? false;
   return (
     <FlipMove>
       {items.map((item, index) => (
@@ -20,12 +24,12 @@ function List(props: {
         >
           <div
             className='space-x-1 flex items-center justify-start px-2 py-0.5 text-sm'>
-            <div>
+            {sentiment && (<div>
               {item.sentiment_score > 0.6 ? '😊' : item.sentiment_score < 0.4 ? '😔' : '😐'}
-            </div>
-            <div>
-              {item.homeless_relative_score > 0 ? '🏠' : ''}
-            </div>
+            </div>)}
+            {homeless && (<div>
+              {item.homeless_relative_score > 0 ? '🏠' : '🍀'}
+            </div>)}
             <div
               className={'whitespace-nowrap overflow-hidden overflow-ellipsis ' + (item.abusive_score > 0.75 ? 'text-danger' : '')}>
               {item.abusive_score > 0.75 ? `#Vulgar#: ${item.abusive_score.toFixed(1)}` : ''} {item.content}
@@ -41,7 +45,9 @@ function RealTimeScrollingComponent(props: {
   max_num?: number,
   server?: string,
   interval?: number,
-  className?: string
+  className?: string,
+  sentiment?: boolean;
+  homeless?: boolean;
 }) {
   const interval = props.interval || 5000;
   const max_num = props.max_num || 10;
@@ -89,7 +95,12 @@ function RealTimeScrollingComponent(props: {
         </div>
       </div>
       <div className={'overflow-hidden h-55 px-2 space-y-0.5 xl:h-30 ' + props.className}>
-        <List items={items} removeItem={handleRemoveItem} server={server}/>
+        <List
+          items={items}
+          removeItem={handleRemoveItem}
+          server={server}
+          homeless={props.homeless}
+          sentiment={props.sentiment}/>
       </div>
     </div>
   )
