@@ -236,6 +236,26 @@ class DatabaseService:
 
         return langs
 
+    def get_mastodon_abuse_lang_percent(self, db_name):
+        db = self.couch_api[db_name]
+        rows = db.view('_design/by_lang/_view/by_lang')
+        # get percentage of abusive tweets per language
+        lang_count = defaultdict(int)
+        lang_abuse_count = defaultdict(int)
+        for row in rows:
+            lang = row.key
+            abusive_score = row.value
+            lang_count[lang] += 1
+            if abusive_score > 0.5:
+                lang_abuse_count[lang] += 1
+        lang_percent = {}
+        for lang in lang_count:
+            lang_percent[lang] = lang_abuse_count[lang] / lang_count[lang]
+
+        # sort by percentage, and return top 3
+        lang_percent = dict(sorted(lang_percent.items(), key=lambda item: item[1], reverse=True)[:20])
+        return lang_percent
+
     def init_sudo(self):
         path_to_csvs = 'data/sudo/'
         for filename in os.listdir(path_to_csvs):
@@ -344,6 +364,7 @@ class DatabaseService:
             'all': [
                 '_design/total_docs/_view/total_docs',
                 '_design/by_homeless_related/_view/by_homeless_related',
+                '_design/by_high_abusive_score/_view/by_high_abusive_score',
             ],
             'homeless': ['_design/by_homeless_related/_view/by_homeless_related'],
         }
@@ -355,6 +376,7 @@ class DatabaseService:
         counts = {
             'all': 0,
             'homeless': 0,
+            'high_abusive_scores': 0,
         }
 
         for view_name in scenario_view_map[scenario]:
@@ -370,6 +392,8 @@ class DatabaseService:
                 counts['all'] = count
             elif view_name == '_design/by_homeless_related/_view/by_homeless_related':
                 counts['homeless'] = count
+            elif view_name == '_design/by_high_abusive_score/_view/by_high_abusive_score':
+                counts['high_abusive_scores'] = count
 
         return counts
 
@@ -406,16 +430,27 @@ class DatabaseService:
 
         return counts
 
-    def get_twitter_homeless_related_heat(self, db_name):
-        db = self.couch_api[db_name]
+    def get_twitter_geo_combine(self):
+        db_sudo = self.couch_api['sudo_sa4_homeless']
 
-        rows = db.view('_design/by_homeless_tweet_heat/_view/by_homeless_tweet_heat')
+        rows_sudo = db_sudo.view('_design/by_sa4_and_homeless_counts/_view/by_sa4_and_homeless_counts')
+
+        db_twitter = self.couch_api['twitter']
+
+        rows_twitter_heat = db_twitter.view('_design/by_homeless_tweet_heat/_view/by_homeless_tweet_heat')
+
+        rows_twitter_lang = db_twitter.view('_design/by_lang/_view/by_lang')
 
         with open('data/2011sa4.geojson') as f:
             geojson = json.load(f)
 
+        code_total_dict = {}
+        for row in rows_sudo:
+            sa4_code16, homeless_total = row.key
+            code_total_dict[str(sa4_code16)] = homeless_total
+
         code_heat_dict = {}
-        for row in rows:
+        for row in rows_twitter_heat:
             geo_sa4 = str(row.key)
             combine = row.value
             if geo_sa4 not in code_heat_dict:
@@ -423,12 +458,26 @@ class DatabaseService:
             code_heat_dict[geo_sa4] += combine['like_count'] * 0.1 + combine['retweet_count'] * 0.2 + combine[
                 'reply_count'] * 0.3 + combine['quote_count'] * 0.3
 
+        code_lang_dict = {}
+        for row in rows_twitter_lang:
+            geo_sa4 = str(row.key)
+            lang = row.value
+            if geo_sa4 not in code_lang_dict:
+                code_lang_dict[geo_sa4] = {}
+            code_lang_dict[geo_sa4][lang] = code_lang_dict[geo_sa4].get(lang, 0) + 1
+
         for feature in geojson['features']:
             sa4_code = feature['properties']['SA4_CODE']
             if str(sa4_code) in code_heat_dict:
                 feature['properties']['homeless_heat'] = code_heat_dict[sa4_code]
             else:
                 feature['properties']['homeless_heat'] = 0
+            if str(sa4_code) in code_total_dict:
+                feature['properties']['homeless_total'] = code_total_dict[sa4_code]
+            else:
+                feature['properties']['homeless_total'] = 0
+            if str(sa4_code) in code_lang_dict:
+                feature['properties']['lang'] = code_lang_dict[sa4_code]
 
         return geojson
 
@@ -474,7 +523,16 @@ class DatabaseService:
 
         gcc_sentiment = self.get_twitter_sentiment_gcc('twitter')
 
-        gcc_sentiment_weighted = {}
+        gcc_sentiment_weighted = {
+            'Australian Capital Territory': 0,
+            'New South Wales': 0,
+            'Northern Territory': 0,
+            'Queensland': 0,
+            'South Australia': 0,
+            'Tasmania': 0,
+            'Victoria': 0,
+            'Western Australia': 0,
+        }
         for gcc, sentiment in gcc_sentiment.items():
             if gcc in gcc_state_map:
                 state = gcc_state_map[gcc]
@@ -483,12 +541,20 @@ class DatabaseService:
 
     def get_twitter_sentiment_period(self, db_name, kind):
         db = self.couch_api[db_name]
-        rows = db.view('_design/by_sentiment_day/_view/by_sentiment_time')
+        rows = db.view('_design/by_sentiment_time/_view/by_sentiment_time')
 
         sentiment_counts = defaultdict(lambda: defaultdict(int))
 
+        start_date = datetime.now()
+        end_date = datetime(1970, 1, 1)
         for row in rows:
             dt = datetime.strptime(row.key[:19], "%Y-%m-%dT%H:%M:%S")  # Convert timestamp string to datetime
+
+            if dt < start_date:
+                start_date = dt
+            if dt > end_date:
+                end_date = dt
+
             sentiment = row.value
 
             if kind == "year":
@@ -512,4 +578,8 @@ class DatabaseService:
             elif 0.25 < sentiment <= 1:
                 sentiment_counts[key]['positive'] += 1
 
-        return sentiment_counts
+        return {
+            'start_date': start_date,
+            'end_date': end_date,
+            'sentiment_counts': sentiment_counts
+        }
