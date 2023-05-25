@@ -18,6 +18,9 @@
     "high_abusive_scores": {
       "map": "function(doc) { if(doc.abusive_score > 0.5) { emit(1, null); } }",
       "reduce": "_count"
+    },
+    "by_lang": {
+      "map": "function(doc) { if(doc.language) { emit(doc.language, doc.abusive_score); } }"
     }
   },
   "sudo_gcc_homeless": {
@@ -69,15 +72,21 @@
       "map": "function(doc) { if(doc.job > 0.3 || doc.eco > 0.3 || doc.men > 0.3 || doc.soc > 0.3 || doc.edu > 0.3) { emit(1, null); } }",
       "reduce": "_count"
     },
+    "by_high_abusive_score": {
+      "map": "function(doc) { if(doc.abusive_score > 0.5) { emit(1, null); } }",
+      "reduce": "_count"
+    },
     "by_homeless_tweet_heat": {
-      "map": "function(doc) { if(doc.job > 0.3 || doc.eco > 0.3 || doc.men > 0.3 || doc.soc > 0.3 || doc.edu > 0.3) { if(doc.geo_sa4 !== 'None') { emit(doc.geo_sa4, { 'like_count': doc.public_metrics.like_count, 'retweet_count': doc.public_metrics.retweet_count, 'reply_count': doc.public_metrics.reply_count, 'quote_count': doc.public_metrics.quote_count }); } } }",
-      "reduce": "function(keys, values, rereduce) { var heat = 0; for(var i=0; i<values.length; i++) { heat += (values[i].like_count * 0.1) + (values[i].retweet_count * 0.2) + (values[i].reply_count * 0.3) + (values[i].quote_count * 0.3); } return heat; }"
+      "map": "function(doc) { if(doc.job > 0.3 || doc.eco > 0.3 || doc.men > 0.3 || doc.soc > 0.3 || doc.edu > 0.3) { if(doc.geo_sa4 !== 'None') { emit(doc.geo_sa4, { 'like_count': doc.public_metrics.like_count, 'retweet_count': doc.public_metrics.retweet_count, 'reply_count': doc.public_metrics.reply_count, 'quote_count': doc.public_metrics.quote_count }); } } }"
     },
     "by_sentiment_gcc": {
       "map": "function(doc) { if (doc.geo_gcc !== \"None\" && doc.sentiment !== 0) { emit(doc.geo_gcc, doc.sentiment); } }"
     },
     "by_sentiment_time": {
       "map": "function(doc) { emit(doc.created_at, doc.sentiment); }"
+    },
+    "by_lang": {
+      "map": "function(doc) { if(doc.geo_sa4 !== 'None' && doc.lang) { emit(doc.geo_sa4, doc.lang); } }"
     }
   }
 }

@@ -63,6 +63,12 @@ async def get_mastodon_lang(seconds: int):
     return {"message": "mastodon lang", "docs": docs}
 
 
+@app.get("/api/mastodon/abuse/lang")
+async def get_mastodon_abuse_lang():
+    docs = read_db_service.get_mastodon_abuse_lang_percent('mastodon')
+    return {"message": "mastodon abuse lang", "docs": docs}
+
+
 @app.get("/api/mastodon/count/{scenario}")
 async def get_mastodon_scenario_count(scenario: str):
     # scenario = 'all' | 'homeless' | 'abuse'
@@ -121,9 +127,9 @@ async def get_twitter_homeless_related_distribution(gcc: str):
     return {"message": "twitter homeless related distribution", "docs": docs}
 
 
-@app.get("/api/twitter/homeless/heat")
-async def get_twitter_homeless_related_heat():
-    docs = read_db_service.get_twitter_homeless_related_heat('twitter')
+@app.get("/api/twitter/homeless/combine")
+async def get_twitter_homeless_combine():
+    docs = read_db_service.get_twitter_geo_combine()
     return {"message": "twitter homeless related heat", "docs": docs}
 
 
@@ -143,5 +149,16 @@ async def get_twitter_sentiment_weighted():
 async def get_twitter_sentiment_period(kind: str):
     docs = read_db_service.get_twitter_sentiment_period('twitter', kind)
     return {"message": "twitter sentiment period", "docs": docs}
+
+
+# @app.get("/api/twitter/abuse/count")
+# async def get_twitter_abuse_count():
+#     docs = read_db_service.get_twitter_abuse_count('twitter')
+#     return {"message": "twitter abuse count", "docs": docs}
+
+# @app.get("/api/twitter/number/state")
+# async def get_twitter_number_state():
+#     docs = read_db_service.get_twitter_number_state('twitter')
+#     return {"message": "twitter number state", "docs": docs}
 
 # run with `uvicorn main:app --reload`
