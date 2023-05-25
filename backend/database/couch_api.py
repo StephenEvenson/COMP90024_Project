@@ -277,18 +277,6 @@ class DatabaseService:
 
         return docs
 
-    def get_sudo_regional_population(self, db_name):
-        db = self.couch_api[db_name]
-
-        rows = db.view('_all_docs', include_docs=True)
-
-        docs = []
-        for row in rows:
-            doc = row.doc
-            docs.append(doc)
-
-        return docs
-
     def get_sudo_gcc_homeless(self, db_name):
         db = self.couch_api[db_name]
 
@@ -397,8 +385,12 @@ class DatabaseService:
         ]
 
         counts = {}
+
         for view_name in views:
-            rows = db.view(view_name, key=gcc)
+            if gcc == 'all':
+                rows = db.view(view_name)
+            else:
+                rows = db.view(view_name, key=gcc)
             rows = list(rows)
             if rows:  # Check if the list is not empty
                 if view_name == '_design/by_homeless_job_city/_view/by_homeless_job_city':
@@ -466,51 +458,58 @@ class DatabaseService:
 
         # '1gsyd', '2gmel', '3gbri', '4gade', '5gper', '6ghob', '7gdar', '8acte', '9oter'
         gcc_state_map = {
-            'Australian Capital Territory': '8acte',
-            'New South Wales': '1gsyd',
-            'Northern Territory': '7gdar',
-            'Queensland': '3gbri',
-            'South Australia': '4gade',
-            'Tasmania': '9oter',
-            'Victoria': '2gmel',
-            'Western Australia': '5gper',
+            '8acte': 'Australian Capital Territory',
+            '1gsyd': 'New South Wales',
+            '7gdar': 'Northern Territory',
+            '3gbri': 'Queensland',
+            '4gade': 'South Australia',
+            '9oter': 'Tasmania',
+            '2gmel': 'Victoria',
+            '5gper': 'Western Australia',
         }
         gcc_weighted_dict = {}
         for row in rows:
             state_name, state_persons_total = row.key
-            gcc_weighted_dict[gcc_state_map[state_name]] = state_persons_total / persons_total
+            gcc_weighted_dict[state_name] = state_persons_total / persons_total
 
         gcc_sentiment = self.get_twitter_sentiment_gcc('twitter')
 
         gcc_sentiment_weighted = {}
         for gcc, sentiment in gcc_sentiment.items():
-            if gcc in gcc_weighted_dict:
-                gcc_sentiment_weighted[gcc] = sentiment * gcc_weighted_dict[gcc]
+            if gcc in gcc_state_map:
+                state = gcc_state_map[gcc]
+                gcc_sentiment_weighted[state] = sentiment * gcc_weighted_dict[state]
         return gcc_sentiment_weighted
 
     def get_twitter_sentiment_period(self, db_name, kind):
         db = self.couch_api[db_name]
         rows = db.view('_design/by_sentiment_day/_view/by_sentiment_time')
 
-        sentiment_values = defaultdict(float)
+        sentiment_counts = defaultdict(lambda: defaultdict(int))
 
         for row in rows:
             dt = datetime.strptime(row.key[:19], "%Y-%m-%dT%H:%M:%S")  # Convert timestamp string to datetime
             sentiment = row.value
 
             if kind == "year":
-                key = str(dt.month)
+                key = str(dt.month)  # for each month
             elif kind == "month":
-                quartile = dt.day // 8
-                key = f"{quartile * 8 + 1}-{min((quartile + 1) * 8, 31)}"
+                # quartile = dt.day // 8  # Divide the month into roughly 4 parts
+                # key = f"{quartile * 8 + 1}-{min((quartile + 1) * 8, 31)}"
+                key = str(dt.day)
             elif kind == "week":
-                key = str(dt.weekday())
+                key = str(dt.weekday())  # 0 for Monday, 6 for Sunday
             elif kind == "day":
-                segment = dt.hour // 2
+                segment = dt.hour // 2  # Divide the day into 12 parts
                 key = f"{segment * 2}-{min((segment + 1) * 2, 23)}"
             else:
                 raise ValueError("Invalid 'kind' value. It should be one of ['year', 'month', 'week', 'day']")
 
-            sentiment_values[key] += sentiment
+            if -1 <= sentiment < -0.25:
+                sentiment_counts[key]['negative'] += 1
+            elif -0.25 <= sentiment <= 0.25:
+                sentiment_counts[key]['neutral'] += 1
+            elif 0.25 < sentiment <= 1:
+                sentiment_counts[key]['positive'] += 1
 
-        return sentiment_values
+        return sentiment_counts

@@ -77,7 +77,7 @@
       "map": "function(doc) { if (doc.geo_gcc !== \"None\" && doc.sentiment !== 0) { emit(doc.geo_gcc, doc.sentiment); } }"
     },
     "by_sentiment_time": {
-      "map": "function(doc) { if (doc.sentiment !== 0) { emit(doc.created_at, doc.sentiment); } }"
+      "map": "function(doc) { emit(doc.created_at, doc.sentiment); }"
     }
   }
 }
