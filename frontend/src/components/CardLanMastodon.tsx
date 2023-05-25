@@ -1,6 +1,6 @@
 import {BsMastodon} from "react-icons/bs";
 
-const code2lan = {
+export const code2lan = {
   "aa": "Afar",
   "ab": "Abkhazian",
   "ae": "Avestan",
