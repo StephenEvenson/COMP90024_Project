@@ -5,10 +5,15 @@ from database.couch_api import DatabaseService
 
 app = FastAPI()
 
-read_db_host = os.environ.get('READ_DB_HOST')
-read_db_port = os.environ.get('READ_DB_PORT')
-write_db_port = os.environ.get('WRITE_DB_PORT')
-write_db_host = os.environ.get('WRITE_DB_HOST')
+# read_db_host = os.environ.get('READ_DB_HOST')
+# read_db_port = os.environ.get('READ_DB_PORT')
+# write_db_port = os.environ.get('WRITE_DB_PORT')
+# write_db_host = os.environ.get('WRITE_DB_HOST')
+
+read_db_host = '192.168.0.80'
+read_db_port = '5984'
+write_db_port = '5984'
+write_db_host = '192.168.0.80'
 
 read_db_service = DatabaseService(server_url=f'http://{read_db_host}:{read_db_port}/', username='admin',
                                   password='admin')
@@ -104,34 +109,45 @@ async def get_sudo_sa4_income():
 
 # twitter
 @app.get("/api/twitter/init")
-async def init_mastodon():
+async def init_twitter():
+    write_db_service.init_twitter()
     return {"message": "twitter initialized"}
 
 
 @app.get("/api/twitter/count/{scenario}")
 async def get_twitter_scenario_count(scenario: str):
-    # scenario = 'all' | 'homeless' | 'language' | 'abuse'
-    if scenario == 'all':
-        return {
-            "message": "tweets scenario count",
-            "count": {
-                "all": 378927,
-                "homeless": 5682,
-                "language": 8551,
-                "abuse": 23694
-            }
-        }
-    if scenario == 'homeless':
-        return {"message": "tweets scenario count", "count": 5682}
-    if scenario == 'language':
-        return {"message": "tweets scenario count", "count": 8551}
-    if scenario == 'abuse':
-        return {"message": "tweets scenario count", "count": 23694}
+    # scenario = 'all' | 'homeless' | 'abuse'
+    docs = read_db_service.get_twitter_scenario_count('twitter', scenario)
+    return {"message": "twitter scenario count", "docs": docs}
 
 
-@app.get("/api/twitter/test")
-async def get_twitter_test():
-    docs = read_db_service.get_twitter_test('target_tweets')
-    return {"message": "twitter test", "docs": docs}
+@app.get("/api/twitter/homeless/distribution/{gcc}")
+async def get_twitter_homeless_related_distribution(gcc: str):
+    docs = read_db_service.get_twitter_homeless_related_distribution('twitter', gcc)
+    return {"message": "twitter homeless related distribution", "docs": docs}
+
+
+@app.get("/api/twitter/homeless/heat")
+async def get_twitter_homeless_related_heat():
+    docs = read_db_service.get_twitter_homeless_related_heat('twitter')
+    return {"message": "twitter homeless related heat", "docs": docs}
+
+
+@app.get("/api/twitter/sentiment/gcc")
+async def get_twitter_sentiment_gcc():
+    docs = read_db_service.get_twitter_sentiment_gcc('twitter')
+    return {"message": "twitter sentiment gcc", "docs": docs}
+
+
+@app.get("/api/twitter/sentiment/weighted")
+async def get_twitter_sentiment_weighted():
+    docs = read_db_service.get_sudo_abs_regional_population_sentiment_weighted('sudo_abs_regional_population')
+    return {"message": "twitter sentiment weighted", "docs": docs}
+
+
+@app.get("/api/twitter/sentiment/period/{kind}")
+async def get_twitter_sentiment_period(kind: str):
+    docs = read_db_service.get_twitter_sentiment_period('twitter', kind)
+    return {"message": "twitter sentiment period", "docs": docs}
 
 # run with `uvicorn main:app --reload`
