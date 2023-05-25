@@ -8,21 +8,21 @@ instance_network: qh2-uom-internal
 # Volume
 volumes:
   - vol_name: server-01-volume-data
-    vol_size: 40
+    vol_size: 80
   - vol_name: server-01-volume-docker
-    vol_size: 10
+    vol_size: 100
   - vol_name: server-02-volume-data
-    vol_size: 40
+    vol_size: 80
   - vol_name: server-02-volume-docker
-    vol_size: 10
+    vol_size: 20
   - vol_name: server-03-volume-data
-    vol_size: 40
+    vol_size: 80
   - vol_name: server-03-volume-docker
-    vol_size: 10
+    vol_size: 20
   - vol_name: server-04-volume-data
-    vol_size: 40
+    vol_size: 80
   - vol_name: server-04-volume-docker
-    vol_size: 10
+    vol_size: 20
 
 # Security group
 security_groups:

@@ -5,7 +5,6 @@
 
   roles:
     - role: openstack-volume
-    # - role: openstack-security-group
     - role: openstack-instance
 
 # Install Docker on all hosts
@@ -28,7 +27,7 @@
   roles:
    - role: couchdb-setup
 
-# Perform CouchDB configuration on all hosts except Masternode
+# Perform CouchDB configuration on all hosts except MasterNode
 - hosts: OtherNodes
   vars_files:
    - host-vars/couchdb_vars.yaml
@@ -45,11 +44,44 @@
 
 - hosts: ServerNodes[0]
   vars_files:
+    - host-vars/swarm_vars.yaml
+  gather_facts: true
+
+  roles:
+    - role: swarm-init
+
+- hosts: DbNodes
+  vars_files:
+    - host-vars/swarm_vars.yaml
+  gather_facts: true
+
+  roles:
+    - role: swarm-join
+
+- hosts: AllNodes
+  vars_files:
+    - host-vars/swarm_vars.yaml
+  gather_facts: true
+
+  roles:
+    - role: frontend-nginx-setup
+
+- hosts: ServerNodes[0]
+  vars_files:
     - host-vars/server_vars.yaml
   gather_facts: true
 
   roles:
-    - role: nlp-server-setup
-    - role: mastodon-setup
-    - role: backend-setup
-    - role: frontend-setup
+    - role: docker-pre-build
+    - role: docker-nlp-build
+#    - role: docker-process-build
+#    - role: process-setup
+    - role: docker-mastodon-build
+    - role: docker-backend-build
+    - role: docker-frontend-build
+    - role: docker-network-setup
+    - role: nlp-server-swarm-setup
+    - role: mastodon-swarm-setup
+    - role: backend-swarm-setup
+    - role: frontend-swarm-setup
+

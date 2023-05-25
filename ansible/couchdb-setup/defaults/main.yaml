@@ -1,1 +1,2 @@
 masternode: "{{ groups['MasterNode'][0] }}"
+docker_proxy_settings: "{\"proxies\":{\"default\":{\"httpProxy\":\"http://wwwproxy.unimelb.edu.au:8000\",\"httpsProxy\":\"http://wwwproxy.unimelb.edu.au:8000\",\"noProxy\":\"localhost,127.0.0.1,localaddress,172.16.0.0/12,.melbounre.rc.nectar.org.au,.storage.unimelb.edu.au,.cloud.unimelb.edu.au\"}}}"

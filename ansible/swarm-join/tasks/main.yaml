@@ -1,0 +1,6 @@
+- name: Join docker swarm
+  community.docker.docker_swarm:
+    state: join
+    join_token: "{{ hostvars[groups['ServerNodes'][0]]['swarm_join_token'] }}"
+    remote_addrs: ["{{ groups['ServerNodes'][0] }}"]
+  become: yes

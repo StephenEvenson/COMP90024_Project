@@ -15,6 +15,7 @@
 # Create new docker container for CouchDB and start container
 - name: Create and start CouchDB Docker container
   become: yes
+  environment: "{{ proxy_env }}"
   docker_container:
     name: couchdb
     image: "couchdb:latest"

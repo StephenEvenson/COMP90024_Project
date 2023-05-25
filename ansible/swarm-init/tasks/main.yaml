@@ -1,0 +1,9 @@
+- name: Init a new swarm with default parameters
+  community.docker.docker_swarm:
+    state: present
+  register: swarm_init
+  become: yes
+
+- name: Save docker swarm join token
+  set_fact:
+    swarm_join_token: "{{ swarm_init.swarm_facts.JoinTokens.Worker }}"

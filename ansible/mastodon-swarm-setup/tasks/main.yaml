@@ -1,0 +1,18 @@
+# Create new Docker container and start container
+- name: Create and start Docker container
+  become: yes
+  community.docker.docker_swarm_service:
+    name: '{{ item.name }}'
+    image: "{{ groups['ServerNodes'][0] }}:{{ ports.registry }}/comp90024/mastodon"
+    replicas: 1
+    env:
+      API_URL: "{{ item.API_URL }}"
+      ACCESS_TOKEN: "{{ item.ACCESS_TOKEN }}"
+      NLP_HOST: "{{ groups['ServerNodes'][0] }}"
+      NLP_PORT: "{{ ports.nlp }}"
+      WRITE_DB_HOST: "{{ groups['MasterNode'][0] }}"
+      WRITE_DB_PORT: "{{ ports.couchdb }}"
+    placement:
+      constraints:
+        - node.role != manager
+  loop: "{{ mastodons }}"
