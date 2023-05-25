@@ -13,7 +13,7 @@ export const getMastodonLatest = async (interval: number, source?: string) => {
   })) as MessageItem[];
 }
 
-export const getTwitterCount = async (type: 'all' | 'homeless' ) => {
+export const getTwitterCount = async (type: 'all' | 'homeless') => {
   const result = await request.get(`/twitter/count/${type}`);
   return result!.data!.docs as TwitterCount;
 }
@@ -36,4 +36,14 @@ export const getMastodonLangCount = async (interval: number) => {
 export const getSa4SudoHomelessData = async () => {
   const result = await request.get(`/sudo/sudo_sa4_homeless`);
   return result!.data!.docs as Sa4SudoHomeless[];
+}
+
+export const getHomelessFactors = async (area?: string) => {
+  const result = await request.get(`/twitter/homeless/distribution/${area || 'all'}`);
+  return result!.data!.docs;
+}
+
+export const getTwitterSentimentPeriod = async (period: string) => {
+  const result = await request.get(`/twitter/sentiment/period/${period}`);
+  return result!.data!.docs;
 }

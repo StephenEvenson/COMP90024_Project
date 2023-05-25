@@ -1,14 +1,15 @@
 import {ApexOptions} from 'apexcharts';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import ReactApexChart from 'react-apexcharts';
+import {getTwitterSentimentPeriod} from "../api/api";
 
-const options: ApexOptions = {
+const initOptions: ApexOptions = {
   legend: {
     show: false,
     position: 'top',
     horizontalAlign: 'left',
   },
-  colors: ['#3C50E0', '#80CAEE'],
+  colors: ['#3056D3', '#80CAEE', '#eef43f'],
   chart: {
     fontFamily: 'Satoshi, sans-serif',
     height: 335,
@@ -70,7 +71,7 @@ const options: ApexOptions = {
   markers: {
     size: 4,
     colors: '#fff',
-    strokeColors: ['#3056D3', '#80CAEE'],
+    strokeColors: ['#3056D3', '#80CAEE', '#eef43f'],
     strokeWidth: 3,
     strokeOpacity: 0.9,
     strokeDashArray: 0,
@@ -83,20 +84,7 @@ const options: ApexOptions = {
   },
   xaxis: {
     type: 'category',
-    categories: [
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-    ],
+    categories: ['0-2', '2-4', '4-6', '6-8', '8-10', '10-12', '12-14', '14-16', '16-18', '18-20', '20-22', '22-24'],
     axisBorder: {
       show: false,
     },
@@ -111,7 +99,7 @@ const options: ApexOptions = {
       },
     },
     min: 0,
-    max: 100,
+    max: 20000,
   },
 };
 
@@ -122,61 +110,68 @@ interface ChartOneState {
   }[];
 }
 
+const period_options = ['Day', 'Week', 'Month', 'Year'];
 const ChartOne: React.FC = () => {
-  const [state, setState] = useState<ChartOneState>({
-    series: [
-      {
-        name: 'Twitter',
-        data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30, 45],
-      },
+  const [state, setState] = useState<ChartOneState>({series: []});
+  const [options, setOptions] = useState<ApexOptions>(initOptions);
+  const [period, setPeriod] = useState<string>('Day');
+  const [date, setDate] = useState<string[]>(['2021-05-01', '2021-05-31']);
 
-      {
-        name: 'Mastodon',
-        data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39, 51],
-      },
-    ],
-  });
-
+  useEffect(() => {
+    const fetchData = async () => {
+      const {sentiment_counts: res, start_date, end_date} = await getTwitterSentimentPeriod(period.toLowerCase())
+      setDate([start_date, end_date])
+      const series = [
+        {
+          name: 'Neutral',
+          data: Object.values(res).map((item: any) => item.neutral),
+        },
+        {
+          name: 'Positive',
+          data: Object.values(res).map((item: any) => item.positive),
+        },
+        {
+          name: 'Negative',
+          data: Object.values(res).map((item: any) => item.negative),
+        }
+      ]
+      const maxY = Math.max(...series.map((item: any) => Math.max(...item.data)))
+      const xaxis = Object.keys(res)
+      const newOptions = JSON.parse(JSON.stringify(options))
+      newOptions.xaxis!.categories = xaxis
+      newOptions!.yaxis!.max = maxY * 1.2
+      setOptions(newOptions)
+      setState({series: series})
+    }
+    fetchData()
+  }, [period])
   return (
     <div
       className="col-span-12 rounded-sm border border-stroke bg-white px-5 pt-7.5 pb-5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
       <div className="flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">
-        <div className="flex w-full flex-wrap gap-3 sm:gap-5">
-          <div className="flex min-w-47.5">
-            <span
-              className="mt-1 mr-2 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-primary">
-              <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-primary"></span>
-            </span>
-            <div className="w-full">
-              <p className="font-semibold text-primary">Total Messages</p>
-              <p className="text-sm font-medium">12.04.2022 - 12.05.2022</p>
-            </div>
-          </div>
-          <div className="flex min-w-47.5">
-            <span
-              className="mt-1 mr-2 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-secondary">
-              <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-secondary"></span>
-            </span>
-            <div className="w-full">
-              <p className="font-semibold text-secondary">Total Homeless</p>
-              <p className="text-sm font-medium">12.04.2022 - 12.05.2022</p>
-            </div>
-          </div>
-        </div>
+        <div className='text-2xl font-medium text-black-2 dark:text-white'>Sentiment Distribution of Tweets</div>
         <div className="flex w-full max-w-45 justify-end">
           <div className="inline-flex items-center rounded-md bg-whiter p-1.5 dark:bg-meta-4">
-            <button
-              className="rounded bg-white py-1 px-3 text-xs font-medium text-black shadow-card hover:bg-white hover:shadow-card dark:bg-boxdark dark:text-white dark:hover:bg-boxdark">
-              Day
-            </button>
-            <button
-              className="rounded py-1 px-3 text-xs font-medium text-black hover:bg-white hover:shadow-card dark:text-white dark:hover:bg-boxdark">
-              Week
-            </button>
-            <button
-              className="rounded py-1 px-3 text-xs font-medium text-black hover:bg-white hover:shadow-card dark:text-white dark:hover:bg-boxdark">
-              Month
-            </button>
+            {period_options.map((item, index) =>
+              item == period ?
+                (
+                  <button
+                    className="rounded bg-white py-1 px-3 text-xs font-medium text-black shadow-card hover:bg-white hover:shadow-card dark:bg-boxdark dark:text-white dark:hover:bg-boxdark"
+                    onClick={() => setPeriod(item)}
+                    key={index + item}
+                  >
+                    {item}
+                  </button>
+                ) : (
+                  <button
+                    className="rounded py-1 px-3 text-xs font-medium text-black hover:bg-white hover:shadow-card dark:text-white dark:hover:bg-boxdark"
+                    onClick={() => setPeriod(item)}
+                    key={index + item}
+                  >
+                    {item}
+                  </button>
+                )
+            )}
           </div>
         </div>
       </div>
@@ -192,7 +187,8 @@ const ChartOne: React.FC = () => {
         </div>
       </div>
     </div>
-  );
+  )
+    ;
 };
 
 export default ChartOne;
