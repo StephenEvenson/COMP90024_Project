@@ -1,15 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import WordCloud from 'react-d3-cloud';
-import {getMastodonLangCount} from "../../api/api";
+// import {getMastodonLangCount} from "../../api/api";
 
 
-// const data = [
-//   {text: 'Hey', value: 1000},
-//   {text: 'lol', value: 200},
-//   {text: 'first impression', value: 800},
-//   {text: 'very cool', value: 1000000},
-//   {text: 'duck', value: 10},
-// ];
 export const RWordCloud = (props: { data: { text: string, value: number }[] }) => {
   return (
     <div

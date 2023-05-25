@@ -8,14 +8,26 @@ import {Sa4SudoHomeless} from "../../types";
 import s4geojson from "./2011sa4.geojson";
 
 const Popup = (props: {
+  properties: any,
   title?: string,
-  description?: string,
-}) => (
-  <div className='p-2 max-w-40 overflow-clip'>
-    <div className='text-lg font-bold'>{props.title || 'Title'}</div>
-    <div className='text-sm'>{props.description || 'Description'}</div>
-  </div>
-)
+}) => {
+  // console.log(props.e.features.properties)
+  const {properties} = props
+  return (
+    <div className='p-2 max-w-80 overflow-clip'>
+      <div className='text-base font-bold'>{properties.SA4_NAME || 'Title'}</div>
+      <div className='flex space-x-2'>
+        <div>Homeless number:</div>
+        <div className=''> {properties.homeless || "UnKnow"}</div>
+      </div>
+      <div className='flex space-x-2'>
+        <div>Total tweets number:</div>
+        <div className=''> {properties.homeless || "UnKnow"}</div>
+      </div>
+
+    </div>
+  )
+}
 
 
 export default function () {
@@ -125,11 +137,17 @@ export default function () {
     map.on('click', 'sa4-fills', (e) => {
       const popupNode = document.createElement("div")
       const pop = ReactDOM.createRoot(popupNode)
-      pop.render(<Popup title={'click'} description={e.lngLat.toString()}/>)
-      popUpRef.current
-        .setLngLat(e.lngLat)
-        .setDOMContent(popupNode)
-        .addTo(map)
+      const features = map.queryRenderedFeatures(e.point, {layers: ['sa4-fills']});
+      if (features.length > 0) {
+        const properties = features[0].properties;
+        // console.log(properties);
+        pop.render(<Popup properties={properties}/>)
+        popUpRef.current
+          .setLngLat(e.lngLat)
+          .setDOMContent(popupNode)
+          .addTo(map)
+      }
+
     });
 
     // console.log(map)
