@@ -1,14 +1,13 @@
-import React, {useEffect} from "react";
-import {MapProvider, Map, useMap} from "react-map-gl";
-import SaLayer from "./SaLayer";
-import SaHomeLessLayer from "./SaHomeLessLayer";
+import React from "react";
+import {MapProvider, Map} from "react-map-gl";
+import SaHomeLessLayer from "./SaHomelessLayer";
 
 
 const MapHomeless: React.FC = () => {
   return (
     <MapProvider>
       <div
-        className='col-span-12 rounded-sm border border-stroke bg-white py-6 px-7.5 shadow-default dark:border-strokedark h-90 dark:bg-boxdark xl:col-span-8 xl:h-full'>
+        className='col-span-12 rounded-sm border border-stroke bg-white py-6 px-7.5 shadow-default dark:border-strokedark h-90 dark:bg-boxdark xl:col-span-12 xl:h-150'>
         <div className='w-full h-full'>
           <Map
             id='myMap'

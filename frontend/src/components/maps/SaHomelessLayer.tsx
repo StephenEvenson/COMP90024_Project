@@ -11,27 +11,17 @@ const Popup = (props: {
 }) => {
   // console.log(props.e.features.properties)
   const {properties} = props
-  console.log(properties.lang)
-  const lang = JSON.parse(properties.lang)
   return (
     <div className='p-2 max-w-80 overflow-clip'>
       <div className='text-base font-bold text-black-2'>{properties.SA4_NAME || 'Title'}</div>
       <div className='flex space-x-2'>
         <div>Homeless number:</div>
-        <div className=''> {properties.homeless_total || "UnKnow"}</div>
+        <div className=''> {properties.homeless_total}</div>
       </div>
       <div className='flex space-x-2'>
         <div>Homeless heat:</div>
-        <div className=''> {properties.homeless_heat}</div>
+        <div className=''> {properties.homeless_heat ? properties.homeless_heat .toFixed(2) : 0}</div>
       </div>
-      {Object.keys(lang).length !== 0 && (
-        <div className='flex space-x-2'>
-          <div>Language:</div>
-          {Object.keys(lang).slice(0, 5).map((ll: string) => (
-            <div>{ll}</div>
-          ))}
-        </div>
-      )}
     </div>
   )
 }
@@ -45,7 +35,8 @@ export default function () {
   useEffect(() => {
     getSa4CombineHomelessHeat().then((data) => {
       setGeojsonData(data);
-      // console.log(data)
+      console.log(data)
+      // console.log({'geojsonData': data})
     })
   }, [])
 
@@ -58,6 +49,7 @@ export default function () {
     map.addControl(new mapboxgl.ScaleControl(
       {maxWidth: 80, unit: 'metric'},
     ), 'top-right')
+
 
     let hoveredAreaId: number | null = null;
     // When the user moves their mouse over the phn-fill layer, we'll update the

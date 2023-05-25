@@ -1,7 +1,6 @@
-import React, {useEffect} from "react";
-import {MapProvider, Map, useMap} from "react-map-gl";
-import SaHomeLessLayer from "./SaHomeLessLayer";
-
+import React from "react";
+import {MapProvider, Map} from "react-map-gl";
+import SaDashboardLayer from "./SaDashboardLayer";
 
 const MapHover: React.FC = () => {
   return (
@@ -20,7 +19,7 @@ const MapHover: React.FC = () => {
             mapStyle='mapbox://styles/mapbox/streets-v12'
             mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
           >
-            <SaHomeLessLayer/>
+            <SaDashboardLayer/>
           </Map>
         </div>
       </div>

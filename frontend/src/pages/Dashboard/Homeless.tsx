@@ -13,9 +13,6 @@ const HomelessPage = () => {
   return (
     <DefaultLayout>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        {/* # Homeless topics */}
-        {/*<CardOne/>*/}
-        {/* # Homeless topics */}
         <div className='col-span-2'>
           <MessageBox max_num={30} server={'.au'} homeless={true} sentiment={false}/>
         </div>
@@ -28,15 +25,6 @@ const HomelessPage = () => {
         <MapHomeless/>
         <ChartThree/>
         <HomelessLineChart/>
-        {/*<ChartTwo/>*/}
-
-        {/*<ChartOne/>*/}
-
-        {/*<MapOne />*/}
-        {/*<div className="col-span-12 xl:col-span-8">*/}
-        {/*  <TableOne/>*/}
-        {/*</div>*/}
-        {/*<TeamCard/>*/}
       </div>
     </DefaultLayout>
   );
