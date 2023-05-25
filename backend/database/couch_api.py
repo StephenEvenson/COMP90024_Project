@@ -242,7 +242,7 @@ class DatabaseService:
         # get percentage of abusive tweets per language
         lang_count = defaultdict(int)
         lang_abuse_count = defaultdict(int)
-        print(len(rows))
+
         for row in rows:
             lang = row.key
             abusive_score = row.value
