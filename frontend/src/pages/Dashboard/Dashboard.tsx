@@ -16,13 +16,13 @@ const HomelessPage = () => {
         <CardTotalMastodon/>
         <CardTotalTweets/>
         <div className='col-span-2'>
-          <MessageBox max_num={10} server={'.au'} interval={10000} key={'.au'}/>
+          <MessageBox max_num={10} server={'.au'} interval={5000} key={'.au'}/>
         </div>
         <div className='col-span-2'>
-          <MessageBox max_num={10} server={'.tictoc'} interval={10000} key={'.tictoc'}/>
+          <MessageBox max_num={10} server={'.tictoc'} interval={5000} key={'.tictoc'}/>
         </div>
         <div className='col-span-2'>
-          <MessageBox max_num={10} server={'.social'} interval={10000} key={'.social'}/>
+          <MessageBox max_num={10} server={'.social'} interval={5000} key={'.social'}/>
         </div>
       </div>
 
