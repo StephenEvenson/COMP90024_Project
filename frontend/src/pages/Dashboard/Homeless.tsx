@@ -14,7 +14,7 @@ const HomelessPage = () => {
     <DefaultLayout>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
         <div className='col-span-2'>
-          <MessageBox max_num={30} server={'.au'} homeless={true} sentiment={false}/>
+          <MessageBox max_num={30} server={'.au'} homeless={true} sentiment={false} interval={5000}/>
         </div>
         {/*<CardTwo/>*/}
         <CardTotalMastodon/>
